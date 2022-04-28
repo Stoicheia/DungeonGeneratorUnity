@@ -107,25 +107,25 @@ public struct RoomShape
         };
     }
 
-    public static List<int[]> GetAllOnBoundary(bool[,] grid, Facing facing)
+    public List<int[]> GetAllOnBoundary(Facing facing)
     {
         List<int[]> toReturn = new List<int[]>();
-        for (int i = 0; i < grid.GetLength(0); i++)
+        for (int i = 0; i < Shape.GetLength(0); i++)
         {
-            for (int j = 0; j < grid.GetLength(1); j++)
+            for (int j = 0; j < Shape.GetLength(1); j++)
             {
-                if (!grid[i, j]) continue;
+                if (!Shape[i, j]) continue;
                 Vector2Int fDir = FacingDirection(facing);
-                if (!grid[i + fDir.x, j + fDir.y]) toReturn.Add(new []{i, j});
+                if (!Shape[i + fDir.x, j + fDir.y]) toReturn.Add(new []{i, j});
             }
         }
         
         return toReturn;
     }
 
-    public static int[] GetRandomOnBoundary(bool[,] grid, Facing facing)
+    public int[] GetRandomOnBoundary(Facing facing)
     {
-        var all = GetAllOnBoundary(grid, facing);
+        var all = GetAllOnBoundary(facing);
         return all[UnityEngine.Random.Range(0, all.Count)];
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 
 public enum RoomType
 {
-    Normal, Start, End, None
+    Normal = 1, Start = 2, End = 100, None = -1
 }
 
 /// <summary>
@@ -40,5 +40,15 @@ public class Room
     public static Room Empty()
     {
         return new Room();
+    }
+
+    public static RoomType MaxType(RoomType a, RoomType b)
+    {
+        return a >= b ? a : b;
+    }
+    
+    public static RoomType MaxType(Room a, Room b)
+    {
+        return MaxType(a.Type, b.Type);
     }
 }

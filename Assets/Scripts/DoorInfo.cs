@@ -2,11 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum DoorType
-{
-    Normal, None
-}
-
 public enum Orientation
 {
     Horizontal, Vertical
@@ -41,13 +36,13 @@ public struct RoomPair
 /// </summary>
 public struct DoorInfo
 {
-    private DoorType _type;
+    private RoomType _type;
     private TilePair _tiles;
 
     public Orientation Orientation;
     public TilePair Tiles => _tiles;
     public RoomPair Rooms => new RoomPair(Tiles);
-    public DoorInfo(DoorType type, TileInfo firstTile, TileInfo secondTile)
+    public DoorInfo(RoomType type, TileInfo firstTile, TileInfo secondTile)
     {
         _type = type;
         _tiles = new TilePair(firstTile, secondTile);
@@ -56,6 +51,6 @@ public struct DoorInfo
 
     public static DoorInfo Empty()
     {
-        return new DoorInfo(DoorType.None, TileInfo.Empty(), TileInfo.Empty());
+        return new DoorInfo(RoomType.None, TileInfo.Empty(), TileInfo.Empty());
     }
 }
