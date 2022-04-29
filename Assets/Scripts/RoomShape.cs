@@ -13,9 +13,30 @@ public enum Facing
 /// <summary>
 /// Unique definition for a group of tiles to be placed in the grid, representing a room.
 /// </summary>
-public struct RoomShape
+[Serializable] 
+public class RoomShape
 {
+
+    public int Size;
+    public List<bool> SquashedShape;
     public bool[,] Shape;
+    public bool GetAt(int x, int y)
+    {
+        return SquashedShape[x * Size + y];
+    }
+
+    public void ShapeInit()
+    {
+        Shape = new bool[Size, Size];
+        for (int i = 0; i < Size; i++)
+        {
+            for (int j = 0; j < Size; j++)
+            {
+                Shape[i, j] = SquashedShape[i * Size + j];
+            }
+        }
+    }
+    
     public int NumberOfRooms => RoomCount(Shape);
 
     public List<bool[,]> Orientations()
