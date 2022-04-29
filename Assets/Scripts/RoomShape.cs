@@ -149,4 +149,98 @@ public class RoomShape
         var all = GetAllOnBoundary(facing);
         return all[UnityEngine.Random.Range(0, all.Count)];
     }
+
+    public bool Contiguous => IsContiguous(Shape);
+
+    //Contiguity, diagonals don't count, empty counts as false.
+    public static bool IsContiguous(bool[,] shape)
+    {
+        bool[,] connectedComponent = new bool[shape.GetLength(0),shape.GetLength(1)];
+        for (int i = 0; i < shape.GetLength(0); i++)
+        {
+            for (int j = 0; j < shape.GetLength(1); j++)
+            {
+                connectedComponent[i, j] = false;
+            }
+        }
+        (int, int) starting = (0, 0);
+        bool anyFilled = false;
+        Queue<(int, int)> q = new Queue<(int, int)>();
+        
+        //Choose basepoint of a connected component, return false immediately if empty.
+        for (int i = 0; i < shape.GetLength(0) && !anyFilled; i++)
+        {
+            for (int j = 0; j < shape.GetLength(1) && !anyFilled; j++)
+            {
+                if (shape[i, j])
+                {
+                    starting = (i, j);
+                    connectedComponent[i, j] = true;
+                    q.Enqueue((i,j));
+                    anyFilled = true;
+                }
+            }
+        }
+
+        if (!anyFilled) return false;
+
+        bool ConnectedComponentIndex(int i, int j)
+        {
+            if (i < 0 || i >= connectedComponent.GetLength(0)) return false;
+            if (j < 0 || j >= connectedComponent.GetLength(1)) return false;
+            return connectedComponent[i, j];
+        }
+        
+        bool ShapeIndex(int i, int j)
+        {
+            if (i < 0 || i >= shape.GetLength(0)) return false;
+            if (j < 0 || j >= shape.GetLength(1)) return false;
+            return shape[i, j];
+        }
+
+        
+        
+        //Fill out this connected component
+        while (q.Count > 0)
+        {
+            (int, int) coord = q.Dequeue();
+            if (ShapeIndex(coord.Item1 + 1, coord.Item2) && !ConnectedComponentIndex(coord.Item1 + 1, coord.Item2))
+            {
+                connectedComponent[coord.Item1 + 1, coord.Item2] = true;
+                q.Enqueue((coord.Item1 + 1, coord.Item2));
+            }
+            if (ShapeIndex(coord.Item1, coord.Item2 + 1) && !ConnectedComponentIndex(coord.Item1, coord.Item2 + 1))
+            {
+                connectedComponent[coord.Item1, coord.Item2 + 1] = true;
+                q.Enqueue((coord.Item1, coord.Item2 + 1));
+            }
+            if (ShapeIndex(coord.Item1 - 1, coord.Item2) && !ConnectedComponentIndex(coord.Item1 - 1, coord.Item2))
+            {
+                connectedComponent[coord.Item1 - 1, coord.Item2] = true;
+                q.Enqueue((coord.Item1 - 1, coord.Item2));
+            }
+            if (ShapeIndex(coord.Item1, coord.Item2 - 1) && !ConnectedComponentIndex(coord.Item1, coord.Item2 - 1))
+            {
+                connectedComponent[coord.Item1, coord.Item2 - 1] = true;
+                q.Enqueue((coord.Item1, coord.Item2 - 1));
+            }
+        }
+        
+        //Calculates whether the connected component is the whole shape
+        bool result = true;
+        
+        for (int i = starting.Item1; i < shape.GetLength(0); i++)
+        {
+            for (int j = starting.Item2; j < shape.GetLength(1); j++)
+            {
+                result &= connectedComponent[i, j] == shape[i, j];
+            }
+        }
+
+        string s = "";
+        foreach(var v in connectedComponent) s += v + " ";
+        Debug.Log(s);
+
+        return result;
+    }
 }

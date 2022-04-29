@@ -11,6 +11,6 @@ public class RoomShapeAsset : ScriptableObject
     private void OnValidate()
     {
         allowedShapes.ForEach(x => x.ShapeInit());
-        allowedShapes.ForEach(x => Debug.Log(x.NumberOfRooms));
+        allowedShapes.ForEach(x => Debug.Log(x.Contiguous));
     }
 }

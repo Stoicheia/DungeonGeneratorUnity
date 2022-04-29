@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowedShapes:
   - Size: 4
-    SquashedShape: 01000000000000000000000000000000
-  - Size: 3
-    SquashedShape: 000000000000000000
-  - Size: 3
-    SquashedShape: 010000010000000000
+    SquashedShape: 01010101000000010000000101010101
+  - Size: 4
+    SquashedShape: 00000000000000000000000000000000
+  - Size: 4
+    SquashedShape: 00000000000000000000000000000000
