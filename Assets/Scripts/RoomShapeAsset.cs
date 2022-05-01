@@ -10,17 +10,26 @@ public class RoomShapeAsset : ScriptableObject
     [SerializeField][Range(1,256)] private int maxSize;
     [SerializeField][Range(1,256)] private int minSize;
     [SerializeField] private GenerationRuleset neighbourRuleset; 
-    [SerializeField] private List<RoomShape> allowedShapes;
+    [SerializeField] private List<RoomGenerationParameters> parameters;
+    private Dictionary<RoomGenerationParameters, RoomShape> allowedShapes;
 
     private void OnValidate()
     {
-        allowedShapes.ForEach(x => x.ShapeInit());
+        allowedShapes = new Dictionary<RoomGenerationParameters, RoomShape>();
+        foreach (var p in parameters)
+        {
+            allowedShapes[p] = new RoomShape(p.Size, p.SquashedShape);
+        }
         minSize = Math.Min(minSize, maxSize);
     }
-
-    [ContextMenu("Prune Non-Contiguous")]
-    public void PruneNonContiguous()
+    public Dictionary<RoomGenerationParameters, RoomShape> GetValid()
     {
-        allowedShapes = allowedShapes.Where(x => x.Contiguous).ToList();
+        Dictionary<RoomGenerationParameters, RoomShape> validShapes = new Dictionary<RoomGenerationParameters, RoomShape>();
+        foreach (var s in allowedShapes)
+        {
+            if(s.Value.Contiguous) validShapes.Add(s.Key, s.Value);
+        }
+
+        return validShapes;
     }
 }

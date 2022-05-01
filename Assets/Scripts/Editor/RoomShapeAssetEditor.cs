@@ -3,20 +3,22 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomPropertyDrawer(typeof(RoomShape))]
+[CustomPropertyDrawer(typeof(RoomGenerationParameters))]
 public class RoomShapeAssetEditor : PropertyDrawer
 {
+    private const string INSTRUCTION =
+        "If weight = 0, then only counts are considered. If max count <= 0, then only weight is considered.";
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        return 160 + property.FindPropertyRelative(nameof(RoomShape.Size)).intValue * 20;
+        return 170 + property.FindPropertyRelative(nameof(RoomGenerationParameters.Size)).intValue * 20;
     } 
     
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         EditorGUI.BeginProperty(position, label, property);
 
-        SerializedProperty shape = property.FindPropertyRelative(nameof(RoomShape.SquashedShape));
-        SerializedProperty size = property.FindPropertyRelative(nameof(RoomShape.Size));
+        SerializedProperty shape = property.FindPropertyRelative(nameof(RoomGenerationParameters.SquashedShape));
+        SerializedProperty size = property.FindPropertyRelative(nameof(RoomGenerationParameters.Size));
 
         EditorGUI.IntSlider(new Rect(position.x, position.y, position.width, 20), size, 1, 5, 
             new GUIContent("Room Shape "));
@@ -27,7 +29,7 @@ public class RoomShapeAssetEditor : PropertyDrawer
             {
                 shape.GetArrayElementAtIndex(i * size.intValue + j).boolValue = EditorGUI.Toggle(
                     new Rect(position.x + 10 + i * 20
-                        ,  30 + position.y + j * 20, 20, 20)
+                        ,  45 + position.y + j * 20, 20, 20)
                    , shape.GetArrayElementAtIndex(i * size.intValue + j).boolValue
                 );
             }
@@ -38,40 +40,48 @@ public class RoomShapeAssetEditor : PropertyDrawer
         shapeLabel.fontStyle = FontStyle.Bold;
         shapeLabel.normal.textColor = Color.white;
         EditorGUI.LabelField(
-            new Rect(position.x + size.intValue * 20 + 27, position.y + size.intValue * 10 + 19 , 200, 50),
+            new Rect(position.x + size.intValue * 20 + 27, position.y + size.intValue * 10 + 34 , 200, 50),
             "Edit Shape", shapeLabel);
         
-        property.FindPropertyRelative(nameof(RoomShape.Weight)).floatValue = EditorGUI.FloatField(
+        GUIStyle instructionLabel = new GUIStyle();
+        instructionLabel.fontSize = 8;
+        instructionLabel.fontStyle = FontStyle.Italic;
+        instructionLabel.normal.textColor = Color.white;
+        EditorGUI.LabelField(
+            new Rect(position.x + 5, position.y + 21 , 200, 50),
+            INSTRUCTION, instructionLabel);
+        
+        property.FindPropertyRelative(nameof(RoomGenerationParameters.Weight)).floatValue = EditorGUI.FloatField(
             new Rect(position.x, position.y + GetPropertyHeight(property, label) - 120, position.width, 20),
             "Weight",
-            property.FindPropertyRelative(nameof(RoomShape.Weight)).floatValue
+            property.FindPropertyRelative(nameof(RoomGenerationParameters.Weight)).floatValue
         );
-        property.FindPropertyRelative(nameof(RoomShape.MinCount)).intValue = EditorGUI.IntField(
+        property.FindPropertyRelative(nameof(RoomGenerationParameters.MinCount)).intValue = EditorGUI.IntField(
             new Rect(position.x, position.y + GetPropertyHeight(property, label) - 100, position.width, 20),
             "Min Count",
-            property.FindPropertyRelative(nameof(RoomShape.MinCount)).intValue
+            property.FindPropertyRelative(nameof(RoomGenerationParameters.MinCount)).intValue
         );
-        property.FindPropertyRelative(nameof(RoomShape.MaxCount)).intValue = EditorGUI.IntField(
+        property.FindPropertyRelative(nameof(RoomGenerationParameters.MaxCount)).intValue = EditorGUI.IntField(
             new Rect(position.x, position.y + GetPropertyHeight(property, label) - 80, position.width, 20),
             "Max Count",
-            property.FindPropertyRelative(nameof(RoomShape.MaxCount)).intValue
+            property.FindPropertyRelative(nameof(RoomGenerationParameters.MaxCount)).intValue
         );
         
-        property.FindPropertyRelative(nameof(RoomShape.OverrideGenerationRules)).boolValue = EditorGUI.ToggleLeft(
+        property.FindPropertyRelative(nameof(RoomGenerationParameters.OverrideGenerationRules)).boolValue = EditorGUI.ToggleLeft(
             new Rect(position.x, position.y + GetPropertyHeight(property, label) - 50, 140, 20),
             "Override Rules",
-            property.FindPropertyRelative(nameof(RoomShape.OverrideGenerationRules)).boolValue
+            property.FindPropertyRelative(nameof(RoomGenerationParameters.OverrideGenerationRules)).boolValue
         );
 
-        if (property.FindPropertyRelative(nameof(RoomShape.OverrideGenerationRules)).boolValue)
+        if (property.FindPropertyRelative(nameof(RoomGenerationParameters.OverrideGenerationRules)).boolValue)
         {
             EditorGUI.PropertyField(
                 new Rect(position.x + 180, position.y + GetPropertyHeight(property, label) - 50, 200, 20)
-                , property.FindPropertyRelative(nameof(RoomShape.NeighboursRuleset)), GUIContent.none
+                , property.FindPropertyRelative(nameof(RoomGenerationParameters.NeighboursRuleset)), GUIContent.none
                 );
         }
 
-        if (GUI.Button(new Rect(position.xMax - 100, position.y + 25, 100, 20), "Fill All"))
+        if (GUI.Button(new Rect(position.xMax - 75, position.y + 25, 75, 20), "Fill All"))
         {
             for (int i = 0; i < size.intValue; i++)
             {
@@ -82,7 +92,7 @@ public class RoomShapeAssetEditor : PropertyDrawer
             }
         }
         
-        if (GUI.Button(new Rect(position.xMax - 100, position.y + 50, 100, 20), "Empty All"))
+        if (GUI.Button(new Rect(position.xMax - 75, position.y + 45, 75, 20), "Empty All"))
         {
             for (int i = 0; i < size.intValue; i++)
             {

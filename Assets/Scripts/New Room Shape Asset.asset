@@ -12,23 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 127d7683d51a6aa458235a93b661843f, type: 3}
   m_Name: New Room Shape Asset
   m_EditorClassIdentifier: 
-  maxSize: 100
-  minSize: 56
+  maxSize: 107
+  minSize: 72
   neighbourRuleset: {fileID: 11400000, guid: 6694982dffa687f428eea84973ede7fe, type: 2}
-  allowedShapes:
-  - Size: 1
-    SquashedShape: 01
-    OverrideGenerationRules: 1
-    NeighboursRuleset: {fileID: 0}
+  parameters:
   - Size: 2
-    SquashedShape: 01010100
-    OverrideGenerationRules: 1
-    NeighboursRuleset: {fileID: 0}
-  - Size: 2
-    SquashedShape: 01010101
-    OverrideGenerationRules: 1
-    NeighboursRuleset: {fileID: 0}
-  - Size: 2
-    SquashedShape: 01000100
-    OverrideGenerationRules: 1
+    SquashedShape: 00000000
+    Weight: 0
+    MinCount: 0
+    MaxCount: 0
+    OverrideGenerationRules: 0
     NeighboursRuleset: {fileID: 0}

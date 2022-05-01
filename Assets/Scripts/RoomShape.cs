@@ -16,16 +16,17 @@ public enum Facing
 [Serializable] 
 public class RoomShape
 {
-
     public int Size;
     public List<bool> SquashedShape;
     public bool[,] Shape;
 
-    public float Weight;
-    public int MinCount;
-    public int MaxCount;
-    public bool OverrideGenerationRules;
-    public GenerationRuleset NeighboursRuleset;
+    public RoomShape(int size, List<bool> ss)
+    {
+        Size = size;
+        SquashedShape = ss;
+        ShapeInit();
+    }
+    
     public bool GetAt(int x, int y)
     {
         return SquashedShape[x * Size + y];
