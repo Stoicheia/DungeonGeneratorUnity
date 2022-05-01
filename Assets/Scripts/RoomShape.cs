@@ -20,6 +20,12 @@ public class RoomShape
     public int Size;
     public List<bool> SquashedShape;
     public bool[,] Shape;
+
+    public float Weight;
+    public int MinCount;
+    public int MaxCount;
+    public bool OverrideGenerationRules;
+    public GenerationRuleset NeighboursRuleset;
     public bool GetAt(int x, int y)
     {
         return SquashedShape[x * Size + y];
@@ -236,11 +242,7 @@ public class RoomShape
                 result &= connectedComponent[i, j] == shape[i, j];
             }
         }
-
-        string s = "";
-        foreach(var v in connectedComponent) s += v + " ";
-        Debug.Log(s);
-
+        
         return result;
     }
 }
