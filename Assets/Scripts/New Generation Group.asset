@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a215f05a8e4bee4e826b11493b517c1, type: 3}
   m_Name: New Generation Group
   m_EditorClassIdentifier: 
+  startingRoom:
+    Size: 1
+    SquashedShape: 01
   passes:
-  - {fileID: 11400000, guid: 618d4e6b32b79b1489413278a5700fe4, type: 2}
   - {fileID: 11400000, guid: 618d4e6b32b79b1489413278a5700fe4, type: 2}

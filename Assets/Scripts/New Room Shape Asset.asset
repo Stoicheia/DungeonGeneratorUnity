@@ -12,13 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 127d7683d51a6aa458235a93b661843f, type: 3}
   m_Name: New Room Shape Asset
   m_EditorClassIdentifier: 
-  maxSize: 107
-  minSize: 72
+  maxSize: 14
+  minSize: 10
   neighbourRuleset: {fileID: 11400000, guid: 6694982dffa687f428eea84973ede7fe, type: 2}
   parameters:
+  - Size: 1
+    SquashedShape: 01
+    Weight: 1
+    MinCount: 0
+    MaxCount: 0
+    OverrideGenerationRules: 0
+    NeighboursRuleset: {fileID: 0}
   - Size: 2
-    SquashedShape: 00000000
-    Weight: 0
+    SquashedShape: 01000100
+    Weight: 0.2
     MinCount: 0
     MaxCount: 0
     OverrideGenerationRules: 0

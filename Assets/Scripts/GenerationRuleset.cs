@@ -8,17 +8,17 @@ using UnityEngine;
 public struct RoomGenParams
 {
     [SerializeField] int neighbours; 
-    [SerializeField] float weight; 
+    [SerializeField] [Range(0,1)] float probability; 
     [SerializeField] int priority;
 
-    public float Weight => Mathf.Max(0, weight);
+    public float Weight => Mathf.Clamp01(probability);
     public int Priority => priority;
     public int Neighbours => Math.Max(1, neighbours);
 
     public RoomGenParams(int n, float w, int p)
     {
         neighbours = n;
-        weight = w;
+        probability = w;
         priority = p;
     }
 
@@ -29,6 +29,7 @@ public class GenerationRuleset : ScriptableObject
 {
     public bool PropagateHigher;
     private int MaxNeighbours;
+    [SerializeField][Range(0, 1)] private float UniversalProbabilityModifier;
     [SerializeField] private List<RoomGenParams> neighbourParams;
     private Dictionary<int, RoomGenParams> neighbourParamDict;
 

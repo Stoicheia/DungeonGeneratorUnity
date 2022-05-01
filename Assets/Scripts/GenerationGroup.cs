@@ -6,5 +6,6 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Generation Group")]
 public class GenerationGroup : ScriptableObject
 {
+    [SerializeField] private RoomShape startingRoom;
     [SerializeField] private List<RoomShapeAsset> passes;
 }
