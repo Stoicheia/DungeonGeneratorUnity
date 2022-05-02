@@ -12,6 +12,9 @@ public struct RoomGenerationParameters
     public float Weight;
     public int MinCount;
     public int MaxCount;
+    public int Connections;
     public bool OverrideGenerationRules;
     public GenerationRuleset NeighboursRuleset;
+
+    public bool Contiguous => new RoomShape(Size, SquashedShape).Contiguous;
 }

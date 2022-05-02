@@ -30,6 +30,7 @@ public class GenerationRuleset : ScriptableObject
     public bool PropagateHigher;
     private int MaxNeighbours;
     [SerializeField][Range(0, 1)] private float UniversalProbabilityModifier;
+    [SerializeField][Range(0, 1)] private float SuccessiveProbabilityModifier;
     [SerializeField] private List<RoomGenParams> neighbourParams;
     private Dictionary<int, RoomGenParams> neighbourParamDict;
 

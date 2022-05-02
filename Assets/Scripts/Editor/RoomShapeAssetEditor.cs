@@ -7,7 +7,7 @@ using UnityEngine;
 public class RoomShapeAssetEditor : PropertyDrawer
 {
     private const string INSTRUCTION =
-        "If weight = 0, then only counts are considered. If max count <= 0, then only weight is considered.";
+        "If weight = 0, then only counts are considered.\nIf max count <= 0, then only weight is considered.\nNon-contiguous shapes are ignored.";
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         return 170 + property.FindPropertyRelative(nameof(RoomGenerationParameters.Size)).intValue * 20;
@@ -21,7 +21,7 @@ public class RoomShapeAssetEditor : PropertyDrawer
         SerializedProperty size = property.FindPropertyRelative(nameof(RoomGenerationParameters.Size));
 
         EditorGUI.IntSlider(new Rect(position.x, position.y, position.width, 20), size, 1, 5, 
-            new GUIContent("Room Shape "));
+            new GUIContent("Size "));
         shape.arraySize = size.intValue * size.intValue;
         for (int i = 0; i < size.intValue; i++)
         {
@@ -44,11 +44,11 @@ public class RoomShapeAssetEditor : PropertyDrawer
             "Edit Shape", shapeLabel);
         
         GUIStyle instructionLabel = new GUIStyle();
-        instructionLabel.fontSize = 8;
+        instructionLabel.fontSize = 7;
         instructionLabel.fontStyle = FontStyle.Italic;
         instructionLabel.normal.textColor = Color.white;
         EditorGUI.LabelField(
-            new Rect(position.x + 5, position.y + 21 , 200, 50),
+            new Rect(position.x + 5, position.y + 17 , 100, 50),
             INSTRUCTION, instructionLabel);
         
         property.FindPropertyRelative(nameof(RoomGenerationParameters.Weight)).floatValue = EditorGUI.FloatField(
@@ -66,9 +66,14 @@ public class RoomShapeAssetEditor : PropertyDrawer
             "Max Count",
             property.FindPropertyRelative(nameof(RoomGenerationParameters.MaxCount)).intValue
         );
+        property.FindPropertyRelative(nameof(RoomGenerationParameters.Connections)).intValue = EditorGUI.IntSlider(
+            new Rect(position.x, position.y + GetPropertyHeight(property, label) - 60, position.width, 20),
+            "Connections",
+            property.FindPropertyRelative(nameof(RoomGenerationParameters.Connections)).intValue, 1, 4 * size.intValue
+        );
         
         property.FindPropertyRelative(nameof(RoomGenerationParameters.OverrideGenerationRules)).boolValue = EditorGUI.ToggleLeft(
-            new Rect(position.x, position.y + GetPropertyHeight(property, label) - 50, 140, 20),
+            new Rect(position.x, position.y + GetPropertyHeight(property, label) - 35, 140, 20),
             "Override Rules",
             property.FindPropertyRelative(nameof(RoomGenerationParameters.OverrideGenerationRules)).boolValue
         );
@@ -76,7 +81,7 @@ public class RoomShapeAssetEditor : PropertyDrawer
         if (property.FindPropertyRelative(nameof(RoomGenerationParameters.OverrideGenerationRules)).boolValue)
         {
             EditorGUI.PropertyField(
-                new Rect(position.x + 180, position.y + GetPropertyHeight(property, label) - 50, 200, 20)
+                new Rect(position.x + 180, position.y + GetPropertyHeight(property, label) - 35, 200, 20)
                 , property.FindPropertyRelative(nameof(RoomGenerationParameters.NeighboursRuleset)), GUIContent.none
                 );
         }
