@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 416797323}
   - component: {fileID: 416797322}
+  - component: {fileID: 416797324}
   m_Layer: 0
   m_Name: Drawer
   m_TagString: Untagged
@@ -166,6 +167,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &416797324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 416797321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 438e627a87ba7554da444aa763844e67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Instructions: {fileID: 11400000, guid: 51bd048d83b51aa42a44625de05cb504, type: 2}
 --- !u!1 &1181593284
 GameObject:
   m_ObjectHideFlags: 0

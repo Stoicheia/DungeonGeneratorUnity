@@ -8,4 +8,7 @@ public class GenerationGroup : ScriptableObject
 {
     [SerializeField] private RoomShape startingRoom;
     [SerializeField] private List<RoomShapeAsset> passes;
+
+    public RoomShape StartingRoom => startingRoom;
+    public List<RoomShapeAsset> Passes => passes;
 }

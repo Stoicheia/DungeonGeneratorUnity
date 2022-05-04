@@ -13,6 +13,16 @@ public class RoomShapeAsset : ScriptableObject
     [SerializeField] private List<RoomGenerationParameters> rooms;
     private Dictionary<RoomGenerationParameters, RoomShape> allowedShapes;
 
+    public int MaxSize => maxSize;
+
+    public int MinSize => minSize;
+
+    public GenerationRuleset NeighbourRuleset => neighbourRuleset;
+
+    public List<RoomGenerationParameters> Rooms => rooms;
+
+    public RoomShape GetRoom(RoomGenerationParameters param) => allowedShapes[param];
+
     private void OnValidate()
     {
         allowedShapes = new Dictionary<RoomGenerationParameters, RoomShape>();

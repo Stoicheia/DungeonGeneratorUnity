@@ -93,7 +93,7 @@ public class RoomShape
         return count;
     }
     
-    private static List<int[]> GetAllActive(bool[,] grid)
+    public static List<int[]> GetAllActive(bool[,] grid)
     {
         List<int[]> toReturn = new List<int[]>();
         for (int i = 0; i < grid.GetLength(0); i++)
@@ -105,6 +105,11 @@ public class RoomShape
         }
 
         return toReturn;
+    }
+
+    public List<int[]> GetAllActive()
+    {
+        return GetAllActive(Shape);
     }
 
     public static int[] PickRandomActive(bool[,] grid)
@@ -121,6 +126,11 @@ public class RoomShape
         }
         
         throw new ArgumentOutOfRangeException();
+    }
+    
+    public int[] PickRandomActive()
+    {
+        return PickRandomActive(Shape);
     }
 
     private static Vector2Int FacingDirection(Facing facing)

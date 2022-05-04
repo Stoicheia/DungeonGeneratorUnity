@@ -18,7 +18,7 @@ MonoBehaviour:
   rooms:
   - Size: 1
     SquashedShape: 01
-    Weight: 0.8
+    Weight: 1
     MinCount: 0
     MaxCount: 0
     Connections: 3
@@ -30,6 +30,14 @@ MonoBehaviour:
     MinCount: 0
     MaxCount: 0
     Connections: 7
+    OverrideGenerationRules: 0
+    NeighboursRuleset: {fileID: 0}
+  - Size: 2
+    SquashedShape: 01010100
+    Weight: 0.1
+    MinCount: 0
+    MaxCount: 0
+    Connections: 5
     OverrideGenerationRules: 0
     NeighboursRuleset: {fileID: 0}
   - Size: 2
