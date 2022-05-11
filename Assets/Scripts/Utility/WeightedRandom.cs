@@ -25,7 +25,7 @@ public static class WeightedRandom<T>
 			return maxObject;
 		}
 
-		List<float> positiveWeights = weights.Select(x => x + bias - Mathf.Max(0,weights.Min())).ToList();
+		List<float> positiveWeights = weights.Select(x => x + bias - Mathf.Min(0,weights.Min())).ToList();
 		List<float> normedWeights = positiveWeights.Select(x => Mathf.Pow(x, norm)).ToList();
 		float randomPosition = UnityEngine.Random.Range(0.0f, normedWeights.Sum());
 		float cumulativeSum = 0;

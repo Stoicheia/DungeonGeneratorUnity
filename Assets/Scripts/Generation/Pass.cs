@@ -31,6 +31,7 @@ public class Pass
     {
         Queue<Room> unexploredRooms = new Queue<Room>();
         GenerateRoomQueue(_parameters, out _roomQueue);
+        DungeonGenerator.Record("Generated Room Queue");
         foreach(var room in dungeon.Rooms)
             unexploredRooms.Enqueue(room);
 
@@ -79,8 +80,9 @@ public class Pass
             currentSize += toAdd.Item2.Size;
             roomCount[toAdd.Item2]++;
         }
-
+        
         queue = new Queue<(RoomGenerationParameters, RoomShape)>(unsortedQueue.OrderBy(x => UnityEngine.Random.Range(0f, 1f)).ToList());
+        Debug.Log(queue.Peek().Item1.Connections);
     }
 
     private (RoomGenerationParameters, RoomShape) PickRandomRoom(RoomShapeAsset parameters)

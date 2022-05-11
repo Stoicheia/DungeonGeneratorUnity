@@ -39,9 +39,8 @@ public class DungeonDrawer : MonoBehaviour
     {
         Clear();
         InitialiseGrid();
-        DisableAll();
-        
-        
+
+
         var tiles = g.Tiles;
         var doors = g.Doors;
         var rooms = g.Rooms;
@@ -68,6 +67,7 @@ public class DungeonDrawer : MonoBehaviour
             {
                 RectTransform tile = Instantiate(_tilePrefab, new Vector3(_tileSize.x * i, _tileSize.y * j, 0)
                     , Quaternion.identity).rectTransform;
+                tile.gameObject.SetActive(false);
                 tile.SetParent(_tilesContainer);
                 _tiles.Add(new Vector2Int(i, j), tile);
                 
@@ -79,6 +79,7 @@ public class DungeonDrawer : MonoBehaviour
                     RectTransform verticalDoor = Instantiate(_verticalDoorPrefab,
                         new Vector3(_tileSize.x * i + _tileSize.x/2, _tileSize.y * j, 0), Quaternion.identity).rectTransform;
                     verticalDoor.SetParent(_doorsContainer);
+                    verticalDoor.gameObject.SetActive(false);
                     _doors.Add((new Vector2Int(i, j), new Vector2Int(i + 1, j)), verticalDoor);
                     _doors.Add((new Vector2Int(i + 1, j), new Vector2Int(i, j)), verticalDoor);
                 }
@@ -88,6 +89,7 @@ public class DungeonDrawer : MonoBehaviour
                     RectTransform horizontalDoor = Instantiate(_horizontalDoorPrefab,
                         new Vector3(_tileSize.x * i, _tileSize.y * j + _tileSize.y/2, 0), Quaternion.Euler(0,0,90)).rectTransform;
                     horizontalDoor.SetParent(_doorsContainer);
+                    horizontalDoor.gameObject.SetActive(false);
                     _doors.Add((new Vector2Int(i, j), new Vector2Int(i, j + 1)), horizontalDoor);
                     _doors.Add((new Vector2Int(i, j + 1), new Vector2Int(i, j)), horizontalDoor);
                 }

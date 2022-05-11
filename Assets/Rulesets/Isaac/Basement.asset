@@ -26,7 +26,7 @@ MonoBehaviour:
     NeighboursRuleset: {fileID: 0}
   - Size: 2
     SquashedShape: 01010101
-    Weight: 0.1
+    Weight: 0.5
     MinCount: 0
     MaxCount: 0
     Connections: 7
@@ -34,7 +34,7 @@ MonoBehaviour:
     NeighboursRuleset: {fileID: 0}
   - Size: 2
     SquashedShape: 01010100
-    Weight: 0.1
+    Weight: 0.5
     MinCount: 0
     MaxCount: 0
     Connections: 5
@@ -42,7 +42,7 @@ MonoBehaviour:
     NeighboursRuleset: {fileID: 0}
   - Size: 2
     SquashedShape: 01000100
-    Weight: 0.1
+    Weight: 0.5
     MinCount: 0
     MaxCount: 0
     Connections: 5
