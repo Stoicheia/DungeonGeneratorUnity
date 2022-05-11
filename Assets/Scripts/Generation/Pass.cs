@@ -7,9 +7,12 @@ using UnityEngine;
 public class Pass
 {
     private int _tilesPlaced;
-    private List<RoomShape> _roomQueue;
+    private Queue<(RoomGenerationParameters, RoomShape)> _roomQueue;
     private RoomShapeAsset _parameters;
-    
+
+    private RoomGenerationParameters _currentRoomParameters;
+    private RoomShape _currentRoomShape;
+
     /// <summary>
     /// A pass is a container for a set of generation rules. Call DoPass(dungeon) to write to a dungeon based on these rules.
     /// </summary>
@@ -30,18 +33,20 @@ public class Pass
         GenerateRoomQueue(_parameters, out _roomQueue);
         foreach(var room in dungeon.Rooms)
             unexploredRooms.Enqueue(room);
-        while (unexploredRooms.Count > 0)
+
+        (_currentRoomParameters, _currentRoomShape) = _roomQueue.Dequeue();
+        while (unexploredRooms.Count > 0 && _roomQueue.Count > 0)
         {
             Room currentRoom = unexploredRooms.Dequeue();
             List<Vector2Int> possiblePlacements = dungeon.GetBoundaryRooms(currentRoom);
         }
     }
 
-    private void GenerateRoomQueue(RoomShapeAsset parameters, out List<RoomShape> queue)
+    private void GenerateRoomQueue(RoomShapeAsset parameters, out Queue<(RoomGenerationParameters, RoomShape)> queue)
     {
         int sizeFloor = UnityEngine.Random.Range(parameters.MinSize, parameters.MaxSize);
         int currentSize = 0;
-        List<RoomShape> unsortedQueue = new List<RoomShape>();
+        List<(RoomGenerationParameters, RoomShape)> unsortedQueue = new List<(RoomGenerationParameters, RoomShape)>();
         Dictionary<RoomShape, int> roomCount = new Dictionary<RoomShape, int>();
 
         var validRooms = parameters.GetValid();
@@ -51,7 +56,7 @@ public class Pass
             roomCount.Add(room.Value, 0);
             for (int i = 0; i < room.Key.MinCount; i++)
             {
-                unsortedQueue.Add(room.Value);
+                unsortedQueue.Add((room.Key, room.Value));
                 roomCount[room.Value]++;
             }
 
@@ -62,19 +67,20 @@ public class Pass
         while (currentSize < sizeFloor)
         {
             var toAdd = PickRandomRoom(parameters);
-            if (roomCount[toAdd.Item2] > toAdd.Item1.MaxCount)
+            int maxCount = toAdd.Item1.MaxCount == 0 ? Int32.MaxValue : toAdd.Item1.MaxCount;
+            if (roomCount[toAdd.Item2] > maxCount)
             {
-                if (++tries > 1000000)
+                if (++tries > 35481) //magic number
                     throw new ArgumentException("Max numbers of room shapes are likely inconsistent with the desired room count.");
                 continue;
             }
 
-            unsortedQueue.Add(toAdd.Item2);
+            unsortedQueue.Add(toAdd);
             currentSize += toAdd.Item2.Size;
             roomCount[toAdd.Item2]++;
         }
 
-        queue = unsortedQueue.OrderBy(x => UnityEngine.Random.Range(0f, 1f)).ToList();
+        queue = new Queue<(RoomGenerationParameters, RoomShape)>(unsortedQueue.OrderBy(x => UnityEngine.Random.Range(0f, 1f)).ToList());
     }
 
     private (RoomGenerationParameters, RoomShape) PickRandomRoom(RoomShapeAsset parameters)

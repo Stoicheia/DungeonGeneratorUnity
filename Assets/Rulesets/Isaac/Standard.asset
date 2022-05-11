@@ -18,13 +18,13 @@ MonoBehaviour:
   neighbourParams:
   - neighbours: 1
     probability: 1
-    priority: 0
+    priority: 1
   - neighbours: 2
-    probability: 0.3
-    priority: 0
+    probability: 1
+    priority: 2
   - neighbours: 3
-    probability: 0.1
-    priority: 0
+    probability: 1
+    priority: 3
   - neighbours: 4
-    probability: 0.05
-    priority: 0
+    probability: 1
+    priority: 4

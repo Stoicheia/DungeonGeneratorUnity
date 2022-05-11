@@ -18,7 +18,7 @@ public class DungeonGenerator : MonoBehaviour
     /// <summary>
     /// A dungeon generation process consists of multiple passes. Each pass has independent rules and parameters.
     /// </summary>
-    public void Generate()
+    public TileGrid Generate()
     {
         _startTime = Time.time;
         Init();
@@ -29,13 +29,15 @@ public class DungeonGenerator : MonoBehaviour
             p.DoPass(Dungeon);
         }
         _endTime = Time.time;
+
+        return Dungeon;
     }
 
     private void Init()
     {
         _passes = Instructions.Passes;
         _starting = Instructions.StartingRoom;
-        Dungeon.Init();
+        Dungeon = new TileGrid();
     }
 
     private void PlaceStartingRoom()

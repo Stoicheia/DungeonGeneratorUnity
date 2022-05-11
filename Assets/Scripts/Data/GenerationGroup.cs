@@ -11,4 +11,9 @@ public class GenerationGroup : ScriptableObject
 
     public RoomShape StartingRoom => startingRoom;
     public List<RoomShapeAsset> Passes => passes;
+    
+    private void OnValidate()
+    {
+        startingRoom.ShapeInit();
+    }
 }

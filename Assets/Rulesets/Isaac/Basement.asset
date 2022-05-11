@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 127d7683d51a6aa458235a93b661843f, type: 3}
   m_Name: Basement
   m_EditorClassIdentifier: 
-  maxSize: 14
-  minSize: 10
+  maxSize: 15
+  minSize: 9
   neighbourRuleset: {fileID: 11400000, guid: 6694982dffa687f428eea84973ede7fe, type: 2}
   rooms:
   - Size: 1
@@ -21,7 +21,7 @@ MonoBehaviour:
     Weight: 1
     MinCount: 0
     MaxCount: 0
-    Connections: 3
+    Connections: 4
     OverrideGenerationRules: 0
     NeighboursRuleset: {fileID: 0}
   - Size: 2
