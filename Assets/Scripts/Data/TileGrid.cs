@@ -91,42 +91,38 @@ public class TileGrid
         return GetTile(coords).Active;
     }
 
-    public List<(int, int)> GetBoundaryRoomsInPairs(Room room)
-    {
-        return GetBoundaryRooms(room).Select(x => (x.x, x.y)).ToList();
-    }
-
     /// <summary>
     /// Get valid placements adjacent to a particular room.
     /// </summary>
     /// <param name="room"></param>
     /// <returns></returns>
-    public List<Vector2Int> GetBoundaryRooms(Room room) => GetBoundaryRooms(room.TileCoords); 
+    public List<(Vector2Int, Facing)> GetBoundaryRooms(Room room, bool prospective) => GetBoundaryRooms(room.TileCoords, prospective); 
 
-    public List<Vector2Int> GetBoundaryRooms(List<Vector2Int> tiles)
+    public List<(Vector2Int, Facing)> GetBoundaryRooms(List<Vector2Int> tiles, bool prospective)
     {
-        HashSet<Vector2Int> result = new HashSet<Vector2Int>();
+        HashSet<(Vector2Int, Facing)> result = new HashSet<(Vector2Int, Facing)>();
 
         foreach (var coord in tiles)
         {
             if(!tiles.Contains(coord + Vector2Int.down))
-                result.Add(coord + Vector2Int.down);
+                result.Add((coord + Vector2Int.down, Facing.Down));
             if(!tiles.Contains(coord + Vector2Int.up))
-                result.Add(coord + Vector2Int.up);
+                result.Add((coord + Vector2Int.up, Facing.Up));
             if(!tiles.Contains(coord + Vector2Int.left))
-                result.Add(coord + Vector2Int.left);
+                result.Add((coord + Vector2Int.left, Facing.Left));
             if(!tiles.Contains(coord + Vector2Int.right))
-                result.Add(coord + Vector2Int.right);
+                result.Add((coord + Vector2Int.right, Facing.Right));
         }
         
-        List<Vector2Int> filteredResult = new List<Vector2Int>();
+        List<(Vector2Int, Facing)> filteredResult = new List<(Vector2Int, Facing)>();
 
-        foreach (var coord in result)
+        foreach (var v in result)
         {
+            var coord = v.Item1;
             if (coord.x < 0 || coord.x >= GRID_SIZE || coord.y < 0 || coord.y > GRID_SIZE) continue;
-            if(IsOccupied(coord)) continue;
+            if(IsOccupied(coord) && !prospective) continue;
 
-            filteredResult.Add(coord);
+            filteredResult.Add((coord, v.Item2));
         }
 
         return filteredResult;
@@ -160,7 +156,7 @@ public class TileGrid
             }
         }
 
-        return GetBoundaryRooms(gridCoords).Count(IsOccupied);
+        return GetBoundaryRooms(gridCoords, true).Count(x => IsOccupied(x.Item1));
     }
 
     public Room PlaceRoom((int, int) at, RoomShape roomShape, RoomType type)

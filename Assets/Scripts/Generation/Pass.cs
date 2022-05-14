@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = System.Random;
 
 public class Pass
 {
+    private const int MAX_PLACEMENT_ATTEMPTS = 100;
+    
     private int _tilesPlaced;
     private Queue<(RoomGenerationParameters, RoomShape)> _roomQueue;
     private RoomShapeAsset _parameters;
@@ -29,20 +32,52 @@ public class Pass
     /// <param name="dungeon"></param>
     public void DoPass(TileGrid dungeon)
     {
+        //Initialisation and room queueing
         Queue<Room> unexploredRooms = new Queue<Room>();
+        List<Room> allRooms = new List<Room>();
+        if (true)
+        {
+            Debug.LogError("ルームのないダンジョンはPassをすることができません。設定でスターティング・ルームをつけておいてください。");
+        }
         GenerateRoomQueue(_parameters, out _roomQueue);
         DungeonGenerator.Record("Generated Room Queue");
         foreach (var room in dungeon.Rooms)
         {
             Debug.Log(room);
             unexploredRooms.Enqueue(room);
+            allRooms.Add(room);
         }
-
-        (_currentRoomParameters, _currentRoomShape) = _roomQueue.Dequeue();
-        while (unexploredRooms.Count > 0 && _roomQueue.Count > 0)
+        
+        
+        //Core placement algorithm
+        while (_roomQueue.Count > 0)
         {
-            Room currentRoom = unexploredRooms.Dequeue();
-            List<Vector2Int> possiblePlacements = dungeon.GetBoundaryRooms(currentRoom);
+            (_currentRoomParameters, _currentRoomShape) = _roomQueue.Dequeue();
+            bool placementSuccessful = false;
+            int placementAttempts = 0;
+
+            RoomShape shape = new RoomShape(_currentRoomShape.RandomOrientation());
+
+            while (!placementSuccessful && placementAttempts < MAX_PLACEMENT_ATTEMPTS)
+            {
+                if (unexploredRooms.Count == 0) //refresh unexplored room list if we run out
+                {
+                    unexploredRooms = new Queue<Room>(allRooms.OrderBy(x => UnityEngine.Random.Range(0, 1)));
+                }
+
+                Room currentRoom = unexploredRooms.Dequeue();
+                List<(Vector2Int, Facing)> possiblePlacements = dungeon.GetBoundaryRooms(currentRoom, false);
+                List<(Vector2Int, int)> neighbourCount = new List<(Vector2Int, int)>();
+                foreach (var p in possiblePlacements)
+                {
+                    var (coord, facing) = p;
+                    var anchor = shape.GetRandomOnBoundaryReverse(facing);
+                    int neighbours = dungeon.CountNeighbours(coord, _currentRoomShape, anchor);
+                }
+
+                placementAttempts++;
+            }
+
         }
     }
 
@@ -55,7 +90,7 @@ public class Pass
 
         var validRooms = parameters.GetValid();
         
-        foreach (var room in validRooms)
+        foreach (var room in validRooms.OrderBy(x => UnityEngine.Random.Range(0,1)))
         {
             roomCount.Add(room.Value, 0);
         }
@@ -71,7 +106,7 @@ public class Pass
                     if (t < 0 || t >= parameters.RoomsWithShapes.Count) continue;
                     roomCount[parameters.RoomsWithShapes[t].Item2]++;
                 }
-                currentSize += room.Value.Size;
+                currentSize += room.Value.NumberOfRooms;
             }
         }
 
@@ -85,7 +120,7 @@ public class Pass
                 if (t < 0 || t >= parameters.Rooms.Count) continue;
                 maxCount = Math.Min(maxCount, parameters.Rooms[t].TrueMax);
             }
-            if (roomCount[toAdd.Item2] > maxCount)
+            if (roomCount[toAdd.Item2] >= maxCount)
             {
                 if (++tries > 35481) //magic number
                     throw new ArgumentException("Max numbers of room shapes are likely inconsistent with the desired room count.");
@@ -93,7 +128,7 @@ public class Pass
             }
 
             unsortedQueue.Add(toAdd);
-            currentSize += toAdd.Item2.Size;
+            currentSize += toAdd.Item2.NumberOfRooms;
             roomCount[toAdd.Item2]++;
             
             foreach (var t in toAdd.Item1.SubordinateRoomIndices)

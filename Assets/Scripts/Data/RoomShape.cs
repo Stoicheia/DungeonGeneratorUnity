@@ -27,6 +27,12 @@ public class RoomShape
         ShapeInit();
     }
     
+    public RoomShape(bool[,] s)
+    {
+        Shape = s;
+        Size = s.GetLength(0);
+    }
+    
     public bool GetAt(int x, int y)
     {
         return SquashedShape[x * Size + y];
@@ -80,6 +86,57 @@ public class RoomShape
         orientations.Add(flipReverse);
 
         return orientations;
+    }
+    
+    public bool[,] RandomOrientation()
+    {
+        int o = UnityEngine.Random.Range(0, 4);
+
+        if (o == 0) return Shape;
+
+        if (o == 1)
+        {
+            bool[,] flip = new bool[Shape.GetLength(1), Shape.GetLength(0)];
+            for (int i = 0; i < Shape.GetLength(0); i++)
+            {
+                for (int j = 0; j < Shape.GetLength(1); j++)
+                {
+                    flip[j, i] = Shape[i, j];
+                }
+            }
+
+            return flip;
+        }
+
+        if (o == 2)
+        {
+            bool[,] reverse = new bool[Shape.GetLength(0), Shape.GetLength(1)];
+            for (int i = 0; i < Shape.GetLength(0); i++)
+            {
+                for (int j = 0; j < Shape.GetLength(1); j++)
+                {
+                    reverse[Shape.GetLength(0) - i - 1, Shape.GetLength(1) - j - 1] = Shape[i, j];
+                }
+            }
+
+            return reverse;
+        }
+
+        if(o == 3)
+        {
+            bool[,] flipReverse = new bool[Shape.GetLength(1), Shape.GetLength(0)];
+            for (int i = 0; i < Shape.GetLength(0); i++)
+            {
+                for (int j = 0; j < Shape.GetLength(1); j++)
+                {
+                    flipReverse[Shape.GetLength(0) - j - 1, Shape.GetLength(1) - i - 1] = Shape[i, j];
+                }
+            }
+
+            return flipReverse;
+        }
+
+        throw new ArgumentException("Rng(0, 4) somehow generated a number outside {0, 1, 2, 3}.");
     }
 
     private static int RoomCount(bool[,] grid)
@@ -165,6 +222,42 @@ public class RoomShape
     {
         var all = GetAllOnBoundary(facing);
         return all[UnityEngine.Random.Range(0, all.Count)];
+    }
+    
+    public List<int[]> GetAllOnBoundaryReverse(Facing facing)
+    {
+        List<int[]> toReturn = new List<int[]>();
+        for (int i = 0; i < Shape.GetLength(0); i++)
+        {
+            for (int j = 0; j < Shape.GetLength(1); j++)
+            {
+                if (!Shape[i, j]) continue;
+                Vector2Int fDir = - FacingDirection(facing);
+                if (!Shape[i + fDir.x, j + fDir.y]) toReturn.Add(new []{i, j});
+            }
+        }
+        
+        return toReturn;
+    }
+
+    public int[] GetRandomOnBoundaryReverse(Facing facing)
+    {
+        var all = GetAllOnBoundary(facing);
+        return all[UnityEngine.Random.Range(0, all.Count)];
+    }
+
+    private static bool IsBoundary(bool[,] grid, (int, int) coords)
+    {
+        var (x, y) = coords;
+
+        try
+        {
+            return !(grid[x - 1, y] && grid[x + 1, y] && grid[x, y - 1] && grid[x, y + 1]);
+        }
+        catch
+        {
+            return true;
+        }
     }
 
     public bool Contiguous => IsContiguous(Shape);
