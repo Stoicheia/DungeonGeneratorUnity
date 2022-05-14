@@ -15,7 +15,7 @@ public class TileGrid
         public CoordinatePair((int,int) v, (int, int) u)
         {
             first = new Vector2Int(v.Item1, v.Item2);
-            second = new Vector2Int(u.Item1, v.Item2);
+            second = new Vector2Int(u.Item1, u.Item2);
         }
         public Vector2Int first;
         public Vector2Int second;
@@ -47,7 +47,7 @@ public class TileGrid
             for (int j = 0; j < GRID_SIZE; j++)
             {
                 _tiles[i, j] = TileInfo.Empty();
-                if (j + 1 < GRID_SIZE)
+                /*if (j + 1 < GRID_SIZE)
                 {
                     _doors[new CoordinatePair((i, j),(i, j + 1))] = DoorInfo.Empty();
                     _doors[new CoordinatePair((i, j + 1),(i, j))] = DoorInfo.Empty();
@@ -57,7 +57,7 @@ public class TileGrid
                 {
                     _doors[new CoordinatePair((i, j),(i + 1, j))] = DoorInfo.Empty();
                     _doors[new CoordinatePair((i + 1, j),(i, j))] = DoorInfo.Empty();
-                }
+                }*/
             }
         }
     }
@@ -172,7 +172,7 @@ public class TileGrid
             var room = PlaceRoom(new Vector2Int(item1, item2), roomShape, anchor, type);
             if (room != null)
             {
-                GenerateDoors();
+                GenerateDoors(room);
                 return room;
             }
         }
@@ -202,7 +202,8 @@ public class TileGrid
                 if (!shape[i, j]) continue;
                 Vector2Int localCoord = new Vector2Int(i, j) - anchor;
                 Vector2Int gridCoord = at + localCoord;
-                if (IsOccupied(gridCoord)) return null;
+                if (gridCoord.x >= GRID_SIZE || gridCoord.x < 0 || gridCoord.y >= GRID_SIZE || gridCoord.y < 0 
+                    || IsOccupied(gridCoord)) return null;
             }
         }
         
@@ -217,7 +218,7 @@ public class TileGrid
                 Vector2Int localCoord = new Vector2Int(i, j) - anchor;
                 Vector2Int gridCoord = at + localCoord;
                 room.AddTile(gridCoord);
-                _tiles[i, j] = new TileInfo(room, gridCoord);
+                _tiles[gridCoord.x, gridCoord.y] = new TileInfo(room, gridCoord);
             }
         }
         
@@ -305,6 +306,76 @@ public class TileGrid
                 }
             }
         }
+        
+        Debug.Log(Time.realtimeSinceStartup);
+    }
+    
+    private void GenerateDoors(Room r)
+    {
+        foreach (var coord in r.TileCoords)
+        {
+            var i = coord.x;
+            var j = coord.y;
+            if (j + 1 < GRID_SIZE)
+            {
+                var firstRoom = _tiles[i, j].Room;
+                var secondRoom = _tiles[i, j + 1].Room;
+                if (!firstRoom.Equals(secondRoom))
+                {
+                    var info = new DoorInfo(
+                        Room.MaxType(firstRoom, secondRoom), _tiles[i, j], _tiles[i, j + 1]
+                    );
+                    _doors[new CoordinatePair((i, j), (i, j + 1))] = info;
+                    _doors[new CoordinatePair((i, j + 1), (i, j))] = info;
+                }
+            }
+
+            if (i + 1 < GRID_SIZE)
+            {
+                var firstRoom = _tiles[i, j].Room;
+                var secondRoom = _tiles[i + 1, j].Room;
+                if (!firstRoom.Equals(secondRoom))
+                {
+                    var info = new DoorInfo(
+                        Room.MaxType(firstRoom, secondRoom), _tiles[i, j], _tiles[i + 1, j]
+                    );
+                    _doors[new CoordinatePair((i, j), (i + 1, j))] = info;
+                    _doors[new CoordinatePair((i + 1, j), (i, j))] = info;
+                }
+            }
+            
+            if (j - 1 >= 0)
+            {
+                var firstRoom = _tiles[i, j].Room;
+                var secondRoom = _tiles[i, j - 1].Room;
+                if (!firstRoom.Equals(secondRoom))
+                {
+                    var info = new DoorInfo(
+                        Room.MaxType(firstRoom, secondRoom), _tiles[i, j], _tiles[i, j - 1]
+                    );
+                    _doors[new CoordinatePair((i, j), (i, j - 1))] = info;
+                    _doors[new CoordinatePair((i, j - 1), (i, j))] = info;
+                }
+            }
+
+            if (i - 1 >= 0)
+            {
+                var firstRoom = _tiles[i, j].Room;
+                var secondRoom = _tiles[i - 1, j].Room;
+                if (!firstRoom.Equals(secondRoom))
+                {
+                    var info = new DoorInfo(
+                        Room.MaxType(firstRoom, secondRoom), _tiles[i, j], _tiles[i - 1, j]
+                    );
+                    _doors[new CoordinatePair((i, j), (i - 1, j))] = info;
+                    _doors[new CoordinatePair((i - 1, j), (i, j))] = info;
+                }
+            }
+        }
     }
 
+    public override string ToString()
+    {
+        return $"A dungeon with {_rooms.Count.ToString()} rooms.";
+    }
 }

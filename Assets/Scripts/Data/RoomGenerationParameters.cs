@@ -15,6 +15,9 @@ public struct RoomGenerationParameters
     public int Connections;
     public bool OverrideGenerationRules;
     public GenerationRuleset NeighboursRuleset;
+    public int[] SubordinateRoomIndices;
+    
+    public int TrueMax => MaxCount <= 0 ? Int32.MaxValue : MaxCount;
 
     public bool Contiguous => new RoomShape(Size, SquashedShape).Contiguous;
 }

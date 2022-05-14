@@ -10,7 +10,7 @@ public struct TileInfo
 {
     private Room _room;
     private Vector2Int _coords;
-    public bool Active => _room != null;
+    public bool Active => _room != null && _room.Type != RoomType.None;
 
     public Room Room => _room;
     public Vector2Int Coords => _coords;

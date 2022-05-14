@@ -32,8 +32,11 @@ public class Pass
         Queue<Room> unexploredRooms = new Queue<Room>();
         GenerateRoomQueue(_parameters, out _roomQueue);
         DungeonGenerator.Record("Generated Room Queue");
-        foreach(var room in dungeon.Rooms)
+        foreach (var room in dungeon.Rooms)
+        {
+            Debug.Log(room);
             unexploredRooms.Enqueue(room);
+        }
 
         (_currentRoomParameters, _currentRoomShape) = _roomQueue.Dequeue();
         while (unexploredRooms.Count > 0 && _roomQueue.Count > 0)
@@ -51,24 +54,37 @@ public class Pass
         Dictionary<RoomShape, int> roomCount = new Dictionary<RoomShape, int>();
 
         var validRooms = parameters.GetValid();
-
+        
         foreach (var room in validRooms)
         {
             roomCount.Add(room.Value, 0);
-            for (int i = 0; i < room.Key.MinCount; i++)
+        }
+
+        foreach (var room in validRooms)
+        {
+            for (int i = roomCount[room.Value]; i < room.Key.MinCount; i++)
             {
                 unsortedQueue.Add((room.Key, room.Value));
                 roomCount[room.Value]++;
+                foreach (var t in room.Key.SubordinateRoomIndices)
+                {
+                    if (t < 0 || t >= parameters.RoomsWithShapes.Count) continue;
+                    roomCount[parameters.RoomsWithShapes[t].Item2]++;
+                }
+                currentSize += room.Value.Size;
             }
-
-            currentSize += room.Value.Size;
         }
 
         int tries = 0;
         while (currentSize < sizeFloor)
         {
             var toAdd = PickRandomRoom(parameters);
-            int maxCount = toAdd.Item1.MaxCount == 0 ? Int32.MaxValue : toAdd.Item1.MaxCount;
+            int maxCount = toAdd.Item1.TrueMax;
+            foreach (var t in toAdd.Item1.SubordinateRoomIndices)
+            {
+                if (t < 0 || t >= parameters.Rooms.Count) continue;
+                maxCount = Math.Min(maxCount, parameters.Rooms[t].TrueMax);
+            }
             if (roomCount[toAdd.Item2] > maxCount)
             {
                 if (++tries > 35481) //magic number
@@ -79,10 +95,15 @@ public class Pass
             unsortedQueue.Add(toAdd);
             currentSize += toAdd.Item2.Size;
             roomCount[toAdd.Item2]++;
+            
+            foreach (var t in toAdd.Item1.SubordinateRoomIndices)
+            {
+                if (t < 0 || t >= parameters.RoomsWithShapes.Count) continue;
+                roomCount[parameters.RoomsWithShapes[t].Item2]++;
+            }
         }
         
         queue = new Queue<(RoomGenerationParameters, RoomShape)>(unsortedQueue.OrderBy(x => UnityEngine.Random.Range(0f, 1f)).ToList());
-        Debug.Log(queue.Peek().Item1.Connections);
     }
 
     private (RoomGenerationParameters, RoomShape) PickRandomRoom(RoomShapeAsset parameters)

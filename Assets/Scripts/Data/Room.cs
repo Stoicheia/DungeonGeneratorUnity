@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -50,5 +51,28 @@ public class Room
     public static RoomType MaxType(Room a, Room b)
     {
         return MaxType(a.Type, b.Type);
+    }
+
+    public override string ToString()
+    {
+        var tileString = new StringBuilder();
+        foreach (var tile in TileCoords)
+        {
+            tileString.Append(tile.ToString());
+            tileString.Append(", ");
+        }
+
+        string tileOut;
+
+        if (tileString.ToString() == "")
+        {
+            tileOut = "None";
+        }
+        else
+        {
+            tileOut = tileString.ToString().Substring(0, tileString.Length - 2);
+        }
+        
+        return $"Room: Type = {Type}; Tiles = {tileOut}";
     }
 }

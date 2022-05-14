@@ -21,6 +21,22 @@ public class RoomShapeAsset : ScriptableObject
 
     public List<RoomGenerationParameters> Rooms => rooms;
 
+    public List<(RoomGenerationParameters, RoomShape)> RoomsWithShapes
+    {
+        get
+        {
+            List<RoomGenerationParameters> keys = allowedShapes.Keys.ToList();
+            List<RoomShape> values = allowedShapes.Values.ToList();
+            List<(RoomGenerationParameters, RoomShape)> res = new List<(RoomGenerationParameters, RoomShape)>();
+            for (int i = 0; i < Math.Min(keys.Count, values.Count); i++)
+            {
+                res.Add((keys[i], values[i]));
+            }
+
+            return res;
+        }
+    }
+
     public RoomShape GetRoom(RoomGenerationParameters param) => allowedShapes[param];
 
     private void OnValidate()

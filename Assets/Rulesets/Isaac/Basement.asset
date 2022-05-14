@@ -24,27 +24,31 @@ MonoBehaviour:
     Connections: 4
     OverrideGenerationRules: 0
     NeighboursRuleset: {fileID: 0}
+    SubordinateRoomIndices: 
   - Size: 2
     SquashedShape: 01010101
     Weight: 0.5
-    MinCount: 0
-    MaxCount: 0
+    MinCount: 1
+    MaxCount: 2
     Connections: 7
     OverrideGenerationRules: 0
     NeighboursRuleset: {fileID: 0}
+    SubordinateRoomIndices: 0200000003000000
   - Size: 2
     SquashedShape: 01010100
     Weight: 0.5
-    MinCount: 0
-    MaxCount: 0
+    MinCount: 1
+    MaxCount: 2
     Connections: 5
     OverrideGenerationRules: 0
     NeighboursRuleset: {fileID: 0}
+    SubordinateRoomIndices: 0100000003000000
   - Size: 2
     SquashedShape: 01000100
     Weight: 0.5
-    MinCount: 0
-    MaxCount: 0
+    MinCount: 1
+    MaxCount: 2
     Connections: 5
     OverrideGenerationRules: 0
     NeighboursRuleset: {fileID: 0}
+    SubordinateRoomIndices: 0100000002000000
