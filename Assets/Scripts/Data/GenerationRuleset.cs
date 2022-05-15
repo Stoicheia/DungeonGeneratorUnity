@@ -31,8 +31,11 @@ public class GenerationRuleset : ScriptableObject
     private int MaxNeighbours;
     [SerializeField][Range(0, 1)] private float UniversalProbabilityModifier;
     [SerializeField][Range(0, 1)] private float SuccessiveProbabilityModifier;
+    [SerializeField] private bool disfavourSmallEnclaves;
     [SerializeField] private List<RoomGenParams> neighbourParams;
     private Dictionary<int, RoomGenParams> neighbourParamDict;
+
+    public bool AvoidEnclaves => disfavourSmallEnclaves;
 
     private void OnValidate()
     {
@@ -61,10 +64,9 @@ public class GenerationRuleset : ScriptableObject
         int trueNeighbours = PropagateHigher ? Math.Min(neighbours, MaxRepresentedNeighbours()) : neighbours;
         if (neighbourParams.Count <= trueNeighbours)
         {
-            Debug.LogWarning($"No rules defined for {neighbours} neighbours! Propagating higher = {PropagateHigher}.");
             return 0;
         }
-        return neighbourParams[Math.Max(0, trueNeighbours - 1)].Weight;
+        return UniversalProbabilityModifier * neighbourParams[Math.Max(0, trueNeighbours - 1)].Weight;
     }
     
     public List<int> GetNeighbourPriority()

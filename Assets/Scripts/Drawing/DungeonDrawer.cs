@@ -23,6 +23,8 @@ public class DungeonDrawer : MonoBehaviour
     [SerializeField] private Image _verticalDoorPrefab;
     [SerializeField] private Image _horizontalDoorPrefab;
 
+    [SerializeField] private bool _drawWithBoundary;
+
     private Dictionary<Vector2Int, RectTransform> _tiles = new Dictionary<Vector2Int, RectTransform>();
 
     private Dictionary<(Vector2Int, Vector2Int), RectTransform> _doors =
@@ -37,9 +39,13 @@ public class DungeonDrawer : MonoBehaviour
     }
     public void Draw(TileGrid g)
     {
-        Clear();
-        InitialiseGrid();
-
+        if (_tiles.Count == 0 || _doors.Count == 0 || _tilesContainer.childCount == 0)
+        {
+            Debug.Log("This dungeon had not been initialised. Initialising... (this process will take longer than usual)");
+            InitialiseGrid();
+        }
+        Zero(_drawWithBoundary);
+        
         var tileInfo = g.Tiles;
         var doorInfo = g.Doors;
         var roomInfo = g.Rooms;
@@ -110,6 +116,7 @@ public class DungeonDrawer : MonoBehaviour
             }
         }
         
+        //Draw the boundary
         for (int i = 0; i < TileGrid.GRID_SIZE; i++)
         {
             RectTransform horizontalDoor = Instantiate(_horizontalDoorPrefab,
@@ -138,6 +145,34 @@ public class DungeonDrawer : MonoBehaviour
             verticalDoor2.SetParent(_doorsContainer);
             _doors.Add((new Vector2Int(TileGrid.GRID_SIZE - 1, i), new Vector2Int(TileGrid.GRID_SIZE, i)), verticalDoor2);
             _doors.Add((new Vector2Int(TileGrid.GRID_SIZE, i), new Vector2Int(TileGrid.GRID_SIZE - 1, i)), verticalDoor2);
+        }
+    }
+    
+    private void Zero(bool withBoundary)
+    {
+        var tilesList = _tilesContainer.Cast<RectTransform>().ToList();
+        foreach (RectTransform t in tilesList)
+        {
+            t.gameObject.SetActive(false);
+        }
+        var doorsList = _doorsContainer.Cast<RectTransform>().ToList();
+        foreach (RectTransform t in doorsList)
+        {
+            t.gameObject.SetActive(false);
+        }
+
+        if (!withBoundary) return;
+        
+        for (int i = 0; i < TileGrid.GRID_SIZE; i++)
+        {
+            _doors[(new Vector2Int(i, -1), new Vector2Int(i, 0))].gameObject.SetActive(true);
+            _doors[(new Vector2Int(i, TileGrid.GRID_SIZE), new Vector2Int(i, TileGrid.GRID_SIZE - 1))].gameObject.SetActive(true);
+        }
+        
+        for (int i = 0; i < TileGrid.GRID_SIZE; i++)
+        {
+            _doors[((new Vector2Int(-1, i), new Vector2Int(0, i)))].gameObject.SetActive(true);
+            _doors[((new Vector2Int(TileGrid.GRID_SIZE, i), new Vector2Int(TileGrid.GRID_SIZE - 1, i)))].gameObject.SetActive(true);
         }
     }
 

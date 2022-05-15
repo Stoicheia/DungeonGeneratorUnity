@@ -13,17 +13,18 @@ MonoBehaviour:
   m_Name: Standard
   m_EditorClassIdentifier: 
   PropagateHigher: 1
-  UniversalProbabilityModifier: 0.5
+  UniversalProbabilityModifier: 1
   SuccessiveProbabilityModifier: 0.75
+  avoidEnclaves: 0
   neighbourParams:
   - neighbours: 1
     probability: 0.5
     priority: 0
   - neighbours: 2
-    probability: 0
+    probability: 0.04
     priority: 0
   - neighbours: 3
-    probability: 0
+    probability: 0.001
     priority: 0
   - neighbours: 4
     probability: 0

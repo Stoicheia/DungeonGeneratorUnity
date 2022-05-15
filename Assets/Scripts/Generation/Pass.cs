@@ -8,7 +8,8 @@ using Random = System.Random;
 public class Pass
 {
     private const int MAX_PLACEMENT_ATTEMPTS = 100;
-    
+    private const int MAX_QUEUE_TRAVERSAL_FACTOR = 10;
+
     private int _tilesPlaced;
     private Queue<(RoomGenerationParameters, RoomShape)> _roomQueue;
     private RoomShapeAsset _parameters;
@@ -51,12 +52,13 @@ public class Pass
         
         //Core placement algorithm
         int queueTraversalIndex = 0;
+        int maxQueueTraversal = _roomQueue.Count * MAX_QUEUE_TRAVERSAL_FACTOR;
         while (_roomQueue.Count > 0)
         {
             queueTraversalIndex++;
-            if (queueTraversalIndex >= MAX_PLACEMENT_ATTEMPTS)
+            if (queueTraversalIndex >= maxQueueTraversal)
             {
-                Debug.LogWarning($"Dungeon did not finish generating! {_roomQueue.Count} rooms were not placed.");
+                Debug.LogError($"Dungeon did not finish generating! {_roomQueue.Count} rooms were not placed.");
                 break;
             }
             (_toPlaceParams, _toPlaceShape) = _roomQueue.Dequeue();
@@ -70,7 +72,11 @@ public class Pass
             {
                 if (placementAttempts >= MAX_PLACEMENT_ATTEMPTS - 1)
                 {
-                    Debug.LogWarning($"Failed to place this room of size {_toPlaceShape.NumberOfRooms} and probability {_toPlaceParams.Weight}.");
+                    Debug.LogWarning($"Failed to place this room of size " +
+                                     $"{_toPlaceShape.NumberOfRooms} with probability " +
+                                     $"{_toPlaceParams.Weight}. " +
+                                     $"Moved to back of the queue. " +
+                                     $"If you see no errors, this shouldn't be a problem.");
                     _roomQueue.Enqueue((_toPlaceParams, _toPlaceShape));
                     break;
                 }

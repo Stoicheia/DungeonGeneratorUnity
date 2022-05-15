@@ -18,6 +18,8 @@ public class DungeonDrawerEditor : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_verticalDoorPrefab"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_horizontalDoorPrefab"));
         GUILayout.Space(20);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("_drawWithBoundary"));
+        GUILayout.Space(20);
         
         if (GUILayout.Button("Init"))
         {

@@ -23,7 +23,7 @@ public class TileGrid
         public (Vector2Int, Vector2Int) Params => (first, second);
     }
     
-    public const int GRID_SIZE = 31;
+    public const int GRID_SIZE = 63;
     public (int, int) Middle => (GRID_SIZE / 2, GRID_SIZE / 2);
     
     private TileInfo[,] _tiles = new TileInfo[GRID_SIZE, GRID_SIZE];
