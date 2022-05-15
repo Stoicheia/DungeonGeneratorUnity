@@ -40,10 +40,24 @@ public class DungeonDrawer : MonoBehaviour
         Clear();
         InitialiseGrid();
 
+        var tileInfo = g.Tiles;
+        var doorInfo = g.Doors;
+        var roomInfo = g.Rooms;
 
-        var tiles = g.Tiles;
-        var doors = g.Doors;
-        var rooms = g.Rooms;
+        for (int i = 0; i < tileInfo.GetLength(0); i++)
+        {
+            for (int j = 0; j < tileInfo.GetLength(1); j++)
+            {
+                TileInfo tile = tileInfo[i, j];
+                if(tile.Active)
+                    _tiles[new Vector2Int(i, j)].gameObject.SetActive(true);
+            }
+        }
+
+        foreach (var door in doorInfo)
+        {
+            _doors[door.Key.Params].gameObject.SetActive(true);
+        }
         
         
     }

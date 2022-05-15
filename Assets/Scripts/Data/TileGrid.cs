@@ -19,6 +19,8 @@ public class TileGrid
         }
         public Vector2Int first;
         public Vector2Int second;
+
+        public (Vector2Int, Vector2Int) Params => (first, second);
     }
     
     public const int GRID_SIZE = 31;
@@ -168,7 +170,6 @@ public class TileGrid
             var room = PlaceRoom(new Vector2Int(item1, item2), roomShape, anchor, type);
             if (room != null)
             {
-                GenerateDoors(room);
                 return room;
             }
         }
@@ -219,6 +220,7 @@ public class TileGrid
         }
         
         _rooms.Add(room);
+        GenerateDoors(room);
         return room;
 
         /*//Generate doors

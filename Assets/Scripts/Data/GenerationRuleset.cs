@@ -59,7 +59,12 @@ public class GenerationRuleset : ScriptableObject
     public float GetProbability(int neighbours)
     {
         int trueNeighbours = PropagateHigher ? Math.Min(neighbours, MaxRepresentedNeighbours()) : neighbours;
-        return neighbourParams[neighbours].Weight;
+        if (neighbourParams.Count <= trueNeighbours)
+        {
+            Debug.LogWarning($"No rules defined for {neighbours} neighbours! Propagating higher = {PropagateHigher}.");
+            return 0;
+        }
+        return neighbourParams[Math.Max(0, trueNeighbours - 1)].Weight;
     }
     
     public List<int> GetNeighbourPriority()

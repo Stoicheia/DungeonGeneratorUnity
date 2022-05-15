@@ -13,8 +13,8 @@ public class Pass
     private Queue<(RoomGenerationParameters, RoomShape)> _roomQueue;
     private RoomShapeAsset _parameters;
 
-    private RoomGenerationParameters _currentRoomParameters;
-    private RoomShape _currentRoomShape;
+    private RoomGenerationParameters _toPlaceParams;
+    private RoomShape _toPlaceShape;
 
     /// <summary>
     /// A pass is a container for a set of generation rules. Call DoPass(dungeon) to write to a dungeon based on these rules.
@@ -35,7 +35,7 @@ public class Pass
         //Initialisation and room queueing
         Queue<Room> unexploredRooms = new Queue<Room>();
         List<Room> allRooms = new List<Room>();
-        if (true)
+        if (dungeon.Rooms.Count == 0)
         {
             Debug.LogError("ルームのないダンジョンはPassをすることができません。設定でスターティング・ルームをつけておいてください。");
         }
@@ -50,35 +50,76 @@ public class Pass
         
         
         //Core placement algorithm
+        int queueTraversalIndex = 0;
         while (_roomQueue.Count > 0)
         {
-            (_currentRoomParameters, _currentRoomShape) = _roomQueue.Dequeue();
+            queueTraversalIndex++;
+            if (queueTraversalIndex >= MAX_PLACEMENT_ATTEMPTS)
+            {
+                Debug.LogWarning($"Dungeon did not finish generating! {_roomQueue.Count} rooms were not placed.");
+                break;
+            }
+            (_toPlaceParams, _toPlaceShape) = _roomQueue.Dequeue();
+            GenerationRuleset rules = _parameters.GetNeighboursRuleset(_toPlaceParams);
             bool placementSuccessful = false;
             int placementAttempts = 0;
 
-            RoomShape shape = new RoomShape(_currentRoomShape.RandomOrientation());
+            RoomShape shape = new RoomShape(_toPlaceShape.RandomOrientation());
 
-            while (!placementSuccessful && placementAttempts < MAX_PLACEMENT_ATTEMPTS)
+            while (!placementSuccessful)
             {
+                if (placementAttempts >= MAX_PLACEMENT_ATTEMPTS - 1)
+                {
+                    Debug.LogWarning($"Failed to place this room of size {_toPlaceShape.NumberOfRooms} and probability {_toPlaceParams.Weight}.");
+                    _roomQueue.Enqueue((_toPlaceParams, _toPlaceShape));
+                    break;
+                }
+                
+                int belowPriority = Int32.MaxValue;
+                
                 if (unexploredRooms.Count == 0) //refresh unexplored room list if we run out
                 {
-                    unexploredRooms = new Queue<Room>(allRooms.OrderBy(x => UnityEngine.Random.Range(0, 1)));
+                    unexploredRooms = new Queue<Room>(allRooms.OrderBy(x => UnityEngine.Random.Range(0f, 1f)));
                 }
 
                 Room currentRoom = unexploredRooms.Dequeue();
-                List<(Vector2Int, Facing)> possiblePlacements = dungeon.GetBoundaryRooms(currentRoom, false);
+                List<(Vector2Int, Facing)> possiblePlacements = dungeon.GetBoundaryRooms(currentRoom, false)
+                    .OrderBy(x => UnityEngine.Random.Range(0f, 1f)).ToList();
                 List<(Vector2Int, int)> neighbourCount = new List<(Vector2Int, int)>();
                 foreach (var p in possiblePlacements)
                 {
                     var (coord, facing) = p;
-                    var anchor = shape.GetRandomOnBoundaryReverse(facing);
-                    int neighbours = dungeon.CountNeighbours(coord, _currentRoomShape, anchor);
-                }
+                    int[] anchor = shape.GetRandomOnBoundaryReverse(facing);
+                    int neighbours = dungeon.CountNeighbours(coord, _toPlaceShape, anchor);
+                    if (neighbours < 0)
+                    {
+                        placementAttempts++;
+                        continue;
+                    }
+                    float random = UnityEngine.Random.Range(0f, 1f);
+                    float probability = rules.GetProbability(neighbours);
 
-                placementAttempts++;
+                    if (random >= probability)
+                    {
+                        placementAttempts++;
+                        continue;
+                    }
+
+                    Room placed = dungeon.PlaceRoom(coord, shape, anchor, RoomType.Normal);
+                    if (placed != null)
+                    {
+                        placementSuccessful = true;
+                        unexploredRooms.Enqueue(placed);
+                        allRooms.Add(placed);
+                        break;
+                    }
+                    placementAttempts++;
+                }
             }
 
         }
+        
+        Debug.Log($"{dungeon.Rooms.Count} rooms");
     }
 
     private void GenerateRoomQueue(RoomShapeAsset parameters, out Queue<(RoomGenerationParameters, RoomShape)> queue)
@@ -90,7 +131,7 @@ public class Pass
 
         var validRooms = parameters.GetValid();
         
-        foreach (var room in validRooms.OrderBy(x => UnityEngine.Random.Range(0,1)))
+        foreach (var room in validRooms.OrderBy(x => UnityEngine.Random.Range(0f, 1f)))
         {
             roomCount.Add(room.Value, 0);
         }

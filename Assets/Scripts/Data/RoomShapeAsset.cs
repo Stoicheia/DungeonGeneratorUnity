@@ -58,4 +58,10 @@ public class RoomShapeAsset : ScriptableObject
 
         return validShapes;
     }
+
+    public GenerationRuleset GetNeighboursRuleset(RoomGenerationParameters ofParameters)
+    {
+        if (ofParameters.OverrideGenerationRules) return ofParameters.NeighboursRuleset;
+        return neighbourRuleset;
+    }
 }

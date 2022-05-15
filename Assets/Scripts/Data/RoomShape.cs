@@ -202,7 +202,7 @@ public class RoomShape
         };
     }
 
-    public List<int[]> GetAllOnBoundary(Facing facing)
+    public List<int[]> GetAllOnBoundary(Facing facing, bool reverse = false)
     {
         List<int[]> toReturn = new List<int[]>();
         for (int i = 0; i < Shape.GetLength(0); i++)
@@ -210,40 +210,29 @@ public class RoomShape
             for (int j = 0; j < Shape.GetLength(1); j++)
             {
                 if (!Shape[i, j]) continue;
-                Vector2Int fDir = FacingDirection(facing);
-                if (!Shape[i + fDir.x, j + fDir.y]) toReturn.Add(new []{i, j});
+                int mult = reverse ? -1 : 1;
+                Vector2Int fDir = mult * FacingDirection(facing);
+                if (i + fDir.x >= Size || i + fDir.x < 0 || j + fDir.y >= Size || j + fDir.y < 0 || !Shape[i + fDir.x, j + fDir.y]) toReturn.Add(new []{i, j});
             }
         }
         
         return toReturn;
     }
 
-    public int[] GetRandomOnBoundary(Facing facing)
+    public int[] GetRandomOnBoundary(Facing facing, bool reverse = false)
     {
-        var all = GetAllOnBoundary(facing);
+        var all = GetAllOnBoundary(facing, reverse);
         return all[UnityEngine.Random.Range(0, all.Count)];
     }
     
     public List<int[]> GetAllOnBoundaryReverse(Facing facing)
     {
-        List<int[]> toReturn = new List<int[]>();
-        for (int i = 0; i < Shape.GetLength(0); i++)
-        {
-            for (int j = 0; j < Shape.GetLength(1); j++)
-            {
-                if (!Shape[i, j]) continue;
-                Vector2Int fDir = - FacingDirection(facing);
-                if (!Shape[i + fDir.x, j + fDir.y]) toReturn.Add(new []{i, j});
-            }
-        }
-        
-        return toReturn;
+        return GetAllOnBoundary(facing, true);
     }
 
     public int[] GetRandomOnBoundaryReverse(Facing facing)
     {
-        var all = GetAllOnBoundary(facing);
-        return all[UnityEngine.Random.Range(0, all.Count)];
+        return GetRandomOnBoundary(facing, true);
     }
 
     private static bool IsBoundary(bool[,] grid, (int, int) coords)

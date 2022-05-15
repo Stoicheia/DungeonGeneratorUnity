@@ -17,14 +17,14 @@ MonoBehaviour:
   SuccessiveProbabilityModifier: 0.75
   neighbourParams:
   - neighbours: 1
-    probability: 1
-    priority: 1
+    probability: 0.5
+    priority: 0
   - neighbours: 2
-    probability: 1
-    priority: 2
+    probability: 0
+    priority: 0
   - neighbours: 3
-    probability: 1
-    priority: 3
+    probability: 0
+    priority: 0
   - neighbours: 4
-    probability: 1
-    priority: 4
+    probability: 0
+    priority: 0
