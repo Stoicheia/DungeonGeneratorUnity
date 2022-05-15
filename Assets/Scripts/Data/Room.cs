@@ -20,6 +20,7 @@ public class Room
     
     public RoomType Type => _type;
     public List<Vector2Int> TileCoords => _tiles;
+    public int TileCount => _tiles.Count;
 
 
     public Room(RoomType type = RoomType.None)

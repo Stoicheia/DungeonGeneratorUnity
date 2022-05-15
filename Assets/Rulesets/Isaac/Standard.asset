@@ -15,7 +15,7 @@ MonoBehaviour:
   PropagateHigher: 1
   UniversalProbabilityModifier: 1
   SuccessiveProbabilityModifier: 0.75
-  avoidEnclaves: 0
+  disfavourSmallEnclaves: 0
   neighbourParams:
   - neighbours: 1
     probability: 0.5

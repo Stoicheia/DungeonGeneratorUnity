@@ -30,9 +30,12 @@ public class TileGrid
     private Dictionary<CoordinatePair, DoorInfo> _doors;
     private List<Room> _rooms = new List<Room>(GRID_SIZE);
 
+    private int _activeTileCount = 0;
+
     public TileInfo[,] Tiles => _tiles;
     public Dictionary<CoordinatePair, DoorInfo> Doors => _doors;
     public List<Room> Rooms => _rooms;
+    public int ActiveTileCount => _activeTileCount;
 
     public TileGrid()
     {
@@ -44,6 +47,7 @@ public class TileGrid
         _rooms = new List<Room>(GRID_SIZE);
         _doors = new Dictionary<CoordinatePair, DoorInfo>();
         _tiles = new TileInfo[GRID_SIZE, GRID_SIZE];
+        _activeTileCount = 0;
         for (int i = 0; i < GRID_SIZE; i++)
         {
             for (int j = 0; j < GRID_SIZE; j++)
@@ -220,6 +224,7 @@ public class TileGrid
         }
         
         _rooms.Add(room);
+        _activeTileCount += room.TileCount;
         GenerateDoors(room);
         return room;
 
@@ -304,8 +309,6 @@ public class TileGrid
                 }
             }
         }
-        
-        Debug.Log(Time.realtimeSinceStartup);
     }
     
     private void GenerateDoors(Room r)

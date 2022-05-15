@@ -125,7 +125,7 @@ public class Pass
 
         }
         
-        Debug.Log($"{dungeon.Rooms.Count} rooms");
+        Debug.Log($"{dungeon.ActiveTileCount} tiles");
     }
 
     private void GenerateRoomQueue(RoomShapeAsset parameters, out Queue<(RoomGenerationParameters, RoomShape)> queue)
