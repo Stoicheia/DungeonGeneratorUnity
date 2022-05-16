@@ -8,7 +8,8 @@ using Random = System.Random;
 
 public class Pass
 {
-    private const int MAX_PLACEMENT_ATTEMPTS = 50;
+    private const int MAX_PLACEMENT_ATTEMPTS = 32;
+    private const int PLACEMENT_GUARANTEE_THRESHOLD = 16;
     private const int MAX_QUEUE_TRAVERSAL_FACTOR = 10;
     private const int TRIES_PER_PRIORITY = 10;
 
@@ -53,7 +54,6 @@ public class Pass
         DungeonGenerator.Record("Generated Room Queue");
         foreach (var room in dungeon.Rooms)
         {
-            Debug.Log(room);
             unexploredRooms.Enqueue(room);
             allRooms.Add(room);
         }
@@ -141,6 +141,7 @@ public class Pass
                     
                     float random = UnityEngine.Random.Range(0f, 1f);
                     float probability = _passIndex == 0 ? rules.GetProbability(neighbours) : rules.GetProbability(neighbours, distance);
+                    if (placementAttempts >= PLACEMENT_GUARANTEE_THRESHOLD) probability = 1;
                     if(_passIndex == 0 
                        &&!(FloatComparer.AreEqual(rules.DistanceModZero, 0, 0.1f) 
                        && FloatComparer.AreEqual(rules.DistanceModOne, 0, 0.1f)))
