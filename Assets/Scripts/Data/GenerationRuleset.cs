@@ -30,6 +30,7 @@ public struct RoomGenParams
 public class GenerationRuleset : ScriptableObject
 {
     public bool PropagateHigher;
+    public bool IgnoreConnections;
     private int MaxNeighbours;
     [SerializeField][Range(0, 1)] private float UniversalProbabilityModifier;
     [Tooltip("Probability multiplied by 0 at this distance from start. Set both mods to 0 to ignore.")]

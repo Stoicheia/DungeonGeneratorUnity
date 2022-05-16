@@ -8,10 +8,10 @@ using Random = System.Random;
 
 public class Pass
 {
-    private const int MAX_PLACEMENT_ATTEMPTS = 32;
+    private const int MAX_PLACEMENT_ATTEMPTS = 20;
     private const int PLACEMENT_GUARANTEE_THRESHOLD = 16;
     private const int MAX_QUEUE_TRAVERSAL_FACTOR = 10;
-    private const int TRIES_PER_PRIORITY = 10;
+    private const int TRIES_PER_PRIORITY = 4;
 
     private Vector2Int _startingLocation;
     private int _passIndex;
@@ -99,8 +99,11 @@ public class Pass
                 {
                     placementAttempts++;
                     unexploredRooms = new Queue<Room>(allRooms.OrderBy(x => UnityEngine.Random.Range(0f, 1f)));
-                    if(priorityModTracker++ % TRIES_PER_PRIORITY == 0)
+                    if (++priorityModTracker % TRIES_PER_PRIORITY == 0)
+                    {
                         allowedNeighbours = priorityList[(++priorityIndex % priorityList.Count)];
+                        priorityModTracker = 0;
+                    }
                 }
 
                 Room currentRoom = unexploredRooms.Dequeue();
@@ -125,14 +128,13 @@ public class Pass
                     var connectionViolation = false;
                     foreach (var r in adjacentRooms)
                     {
-                        
                         if (r.CurrentConnections + adjacentRooms.Count(x => x == r) > r.Connections)
                         {
                             connectionViolation = true;
                         }
                     }
 
-                    if (connectionViolation)
+                    if (connectionViolation && !rules.IgnoreConnections) 
                     {
                         continue;
                     }
@@ -142,6 +144,7 @@ public class Pass
                     float random = UnityEngine.Random.Range(0f, 1f);
                     float probability = _passIndex == 0 ? rules.GetProbability(neighbours) : rules.GetProbability(neighbours, distance);
                     if (placementAttempts >= PLACEMENT_GUARANTEE_THRESHOLD) probability = 1;
+                    if (priorityModTracker % TRIES_PER_PRIORITY == TRIES_PER_PRIORITY - 1 && priorityList.Count > 1) probability = 1;
                     if(_passIndex == 0 
                        &&!(FloatComparer.AreEqual(rules.DistanceModZero, 0, 0.1f) 
                        && FloatComparer.AreEqual(rules.DistanceModOne, 0, 0.1f)))
@@ -161,12 +164,13 @@ public class Pass
                         unexploredRooms.Enqueue(placed);
                         allRooms.Add(placed);
 
+                        if (rules.IgnoreConnections) break;
+                        
                         placed.CurrentConnections += neighbours;
                         foreach (var r in adjacentRooms)
                         {
                             r.CurrentConnections++;
                         }
-                        
                         break;
                     }
                 }
