@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions.Comparers;
 
@@ -84,8 +85,23 @@ public class GenerationRuleset : ScriptableObject
         return UniversalProbabilityModifier * distanceMod * _neighbourParamDict[trueNeighbours].Weight;
     }
     
-    public List<int> GetNeighbourPriority()
+    public List<List<int>> GetNeighboursByPriority()
     {
-        return _neighbourParams.OrderByDescending(y => y.Priority).Select(x => x.Neighbours).ToList();
+        List<List<int>> toReturn = new List<List<int>>();
+        List<int> withThisPriority = new List<int>();
+        var descendingPriority = _neighbourParams.OrderByDescending(y => y.Priority).Select(x => x.Neighbours).ToList();
+        int currentPriority = Int32.MaxValue;
+        for (int i = 0; i < descendingPriority.Count; i++)
+        {
+            if (descendingPriority[i] < currentPriority && withThisPriority.Count > 0)
+            {
+                toReturn.Add(withThisPriority);
+                withThisPriority = new List<int>();
+            }
+            withThisPriority.Add(descendingPriority[i]);
+        }
+        toReturn.Add(withThisPriority);
+
+        return toReturn;
     }
 }

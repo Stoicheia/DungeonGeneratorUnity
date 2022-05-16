@@ -8,8 +8,9 @@ using Random = System.Random;
 
 public class Pass
 {
-    private const int MAX_PLACEMENT_ATTEMPTS = 100;
+    private const int MAX_PLACEMENT_ATTEMPTS = 50;
     private const int MAX_QUEUE_TRAVERSAL_FACTOR = 10;
+    private const int TRIES_PER_PRIORITY = 10;
 
     private Vector2Int _startingLocation;
     private int _passIndex;
@@ -75,6 +76,11 @@ public class Pass
             int placementAttempts = 0;
 
             RoomShape shape = new RoomShape(_toPlaceShape.RandomOrientation());
+            
+            var priorityList = rules.GetNeighboursByPriority();
+            int priorityIndex = 0;
+            int priorityModTracker = 0;
+            List<int> allowedNeighbours = priorityList[0];
 
             while (!placementSuccessful)
             {
@@ -88,12 +94,13 @@ public class Pass
                     _roomQueue.Enqueue((_toPlaceParams, _toPlaceShape));
                     break;
                 }
-                
-                int belowPriority = Int32.MaxValue;
-                
+
                 if (unexploredRooms.Count == 0) //refresh unexplored room list if we run out
                 {
+                    placementAttempts++;
                     unexploredRooms = new Queue<Room>(allRooms.OrderBy(x => UnityEngine.Random.Range(0f, 1f)));
+                    if(priorityModTracker++ % TRIES_PER_PRIORITY == 0)
+                        allowedNeighbours = priorityList[(++priorityIndex % priorityList.Count)];
                 }
 
                 Room currentRoom = unexploredRooms.Dequeue();
@@ -110,9 +117,8 @@ public class Pass
 
                     List<Room> adjacentRooms = neighbourInfo.Item2;
                     
-                    if (neighbours < 0) //invalid placement
+                    if (neighbours < 0 || !allowedNeighbours.Contains(neighbours)) //invalid placement or not looking here yet
                     {
-                        placementAttempts++;
                         continue;
                     }
 
@@ -128,7 +134,6 @@ public class Pass
 
                     if (connectionViolation)
                     {
-                        placementAttempts++;
                         continue;
                     }
 
@@ -145,7 +150,6 @@ public class Pass
 
                     if (random >= probability)
                     {
-                        placementAttempts++;
                         continue;
                     }
 
@@ -164,7 +168,6 @@ public class Pass
                         
                         break;
                     }
-                    placementAttempts++;
                 }
             }
 
