@@ -15,9 +15,12 @@ public enum RoomType
 /// </summary>
 public class Room
 {
+    public int Connections;
+    public int CurrentConnections;
+    
     private RoomType _type;
     private List<Vector2Int> _tiles;
-    
+
     public RoomType Type => _type;
     public List<Vector2Int> TileCoords => _tiles;
     public int TileCount => _tiles.Count;

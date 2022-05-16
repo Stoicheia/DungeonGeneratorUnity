@@ -9,46 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 127d7683d51a6aa458235a93b661843f, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a215f05a8e4bee4e826b11493b517c1, type: 3}
   m_Name: Basement
   m_EditorClassIdentifier: 
-  maxSize: 21
-  minSize: 14
-  neighbourRuleset: {fileID: 11400000, guid: 6694982dffa687f428eea84973ede7fe, type: 2}
-  rooms:
-  - Size: 1
+  startingRoom:
+    Size: 1
     SquashedShape: 01
-    Weight: 1
-    MinCount: 0
-    MaxCount: 0
-    Connections: 4
-    OverrideGenerationRules: 0
-    NeighboursRuleset: {fileID: 0}
-    SubordinateRoomIndices: 
-  - Size: 2
-    SquashedShape: 01010101
-    Weight: 0.5
-    MinCount: 1
-    MaxCount: 2
-    Connections: 7
-    OverrideGenerationRules: 0
-    NeighboursRuleset: {fileID: 0}
-    SubordinateRoomIndices: 0200000003000000
-  - Size: 2
-    SquashedShape: 01010100
-    Weight: 0.5
-    MinCount: 1
-    MaxCount: 2
-    Connections: 5
-    OverrideGenerationRules: 0
-    NeighboursRuleset: {fileID: 0}
-    SubordinateRoomIndices: 0100000003000000
-  - Size: 2
-    SquashedShape: 01000100
-    Weight: 0.5
-    MinCount: 1
-    MaxCount: 2
-    Connections: 5
-    OverrideGenerationRules: 0
-    NeighboursRuleset: {fileID: 0}
-    SubordinateRoomIndices: 0100000002000000
+  passes:
+  - {fileID: 11400000, guid: 618d4e6b32b79b1489413278a5700fe4, type: 2}
+  - {fileID: 11400000, guid: cb405c22d34efdf45b065fa6fc49042e, type: 2}

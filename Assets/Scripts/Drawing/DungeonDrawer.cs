@@ -37,6 +37,11 @@ public class DungeonDrawer : MonoBehaviour
     {
         Info = _generator.Generate();
     }
+    
+    public void DoPass()
+    {
+        Info = _generator.DoOnePass();
+    }
     public void Draw(TileGrid g)
     {
         if (_tiles.Count == 0 || _doors.Count == 0 || _tilesContainer.childCount == 0)
@@ -146,9 +151,10 @@ public class DungeonDrawer : MonoBehaviour
             _doors.Add((new Vector2Int(TileGrid.GRID_SIZE - 1, i), new Vector2Int(TileGrid.GRID_SIZE, i)), verticalDoor2);
             _doors.Add((new Vector2Int(TileGrid.GRID_SIZE, i), new Vector2Int(TileGrid.GRID_SIZE - 1, i)), verticalDoor2);
         }
+        Debug.Log("Dungeon Visualiser Initialised");
     }
     
-    private void Zero(bool withBoundary)
+    public void Zero(bool withBoundary)
     {
         var tilesList = _tilesContainer.Cast<RectTransform>().ToList();
         foreach (RectTransform t in tilesList)
@@ -174,6 +180,11 @@ public class DungeonDrawer : MonoBehaviour
             _doors[((new Vector2Int(-1, i), new Vector2Int(0, i)))].gameObject.SetActive(true);
             _doors[((new Vector2Int(TileGrid.GRID_SIZE, i), new Vector2Int(TileGrid.GRID_SIZE - 1, i)))].gameObject.SetActive(true);
         }
+    }
+
+    public void ResetPass()
+    {
+        _generator.ResetPass();
     }
 
     public void Clear()

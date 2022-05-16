@@ -98,15 +98,17 @@ public class TileGrid
     }
 
     /// <summary>
-    /// Get valid placements adjacent to a particular room.
+    /// Get information about the tiles adjacent to current room. Rooms are counted multiple times in the output list.
     /// </summary>
     /// <param name="room"></param>
+    /// <param name="prospective"></param>
     /// <returns></returns>
-    public List<(Vector2Int, Facing)> GetBoundaryRooms(Room room, bool prospective) => GetBoundaryRooms(room.TileCoords, prospective); 
+    public (List<(Vector2Int, Facing)>, List<Room>) GetBoundaryTilesAndRooms(Room room, bool prospective) => GetBoundaryTilesAndRooms(room.TileCoords, prospective); 
 
-    public List<(Vector2Int, Facing)> GetBoundaryRooms(List<Vector2Int> tiles, bool prospective)
+    public (List<(Vector2Int, Facing)>, List<Room>) GetBoundaryTilesAndRooms(List<Vector2Int> tiles, bool prospective)
     {
         HashSet<(Vector2Int, Facing)> result = new HashSet<(Vector2Int, Facing)>();
+        List<Room> rooms = new List<Room>();
 
         foreach (var coord in tiles)
         {
@@ -131,22 +133,31 @@ public class TileGrid
             filteredResult.Add((coord, v.Item2));
         }
 
-        return filteredResult;
+        foreach (var v in filteredResult)
+        {
+            var room = _tiles[v.Item1.x, v.Item1.y].Room;
+            if(room.Type != RoomType.None)
+                rooms.Add(room);
+        }
+
+
+        return (filteredResult, rooms);
     }
 
     /// <summary>
-    /// How many active tiles will be adjacent to a prospective placement.
+    /// How many active tiles will be adjacent to a prospective placement. Also contains room information.
     /// </summary>
     /// <param name="at"></param>
     /// <param name="roomShape"></param>
     /// <param name="anchorArr"></param>
     /// <returns></returns>
-    public int CountNeighbours(Vector2Int at, RoomShape roomShape, int[] anchorArr)
+    public (int, List<Room>) CountNeighbours(Vector2Int at, RoomShape roomShape, int[] anchorArr)
     {
         HashSet<Vector2Int> neighbours = new HashSet<Vector2Int>();
+        List<Room> rooms = new List<Room>();
         bool[,] shape = roomShape.Shape;
         Vector2Int anchor = new Vector2Int(anchorArr[0], anchorArr[1]);
-        if (!shape[anchor.x, anchor.y]) return -1;
+        if (!shape[anchor.x, anchor.y]) return (-1, rooms);
 
         List<Vector2Int> gridCoords = new List<Vector2Int>();
         
@@ -158,11 +169,13 @@ public class TileGrid
                 Vector2Int localCoord = new Vector2Int(i, j) - anchor;
                 Vector2Int gridCoord = at + localCoord;
                 gridCoords.Add(gridCoord);
-                if (IsOccupied(gridCoord)) return -1;
+                if (IsOccupied(gridCoord)) return (-1, rooms);
             }
         }
 
-        return GetBoundaryRooms(gridCoords, true).Count(x => IsOccupied(x.Item1));
+        var boundaryInfo = GetBoundaryTilesAndRooms(gridCoords, true);
+
+        return (boundaryInfo.Item1.Count(x => IsOccupied(x.Item1)), boundaryInfo.Item2);
     }
 
     public Room PlaceRoom((int, int) at, RoomShape roomShape, RoomType type)
@@ -180,7 +193,7 @@ public class TileGrid
 
         return null;
     }
-    
+
     /// <summary>
     /// Attempts to place a room on the tile grid. Returns null if placement is invalid.
     /// </summary>
@@ -188,8 +201,9 @@ public class TileGrid
     /// <param name="roomShape"></param>
     /// <param name="anchorArr"></param>
     /// <param name="type"></param>
+    /// <param name="connections"></param>
     /// <returns></returns>
-    public Room PlaceRoom(Vector2Int at, RoomShape roomShape, int[] anchorArr, RoomType type)
+    public Room PlaceRoom(Vector2Int at, RoomShape roomShape, int[] anchorArr, RoomType type, int connections = Int32.MaxValue)
     {
         bool[,] shape = roomShape.Shape;
         Vector2Int anchor = new Vector2Int(anchorArr[0], anchorArr[1]);
@@ -222,53 +236,13 @@ public class TileGrid
                 _tiles[gridCoord.x, gridCoord.y] = new TileInfo(room, gridCoord);
             }
         }
-        
+
+        room.Connections = connections;
         _rooms.Add(room);
         _activeTileCount += room.TileCount;
         GenerateDoors(room);
         return room;
-
-        /*//Generate doors
-        Dictionary<Facing, List<int[]> > roomFacings = new Dictionary<Facing, List<int[]>>()
-        {
-            {Facing.Left, roomShape.GetAllOnBoundary(Facing.Left)},
-            {Facing.Right, roomShape.GetAllOnBoundary(Facing.Right)},
-            {Facing.Up, roomShape.GetAllOnBoundary(Facing.Up)},
-            {Facing.Down, roomShape.GetAllOnBoundary(Facing.Down)}
-        };
-
-        foreach (var f in roomFacings.Keys)
-        {
-            foreach (var coord in roomFacings[f])
-            {
-                Vector2Int localCoord = new Vector2Int(coord[0], coord[1]) - anchor;
-                Vector2Int gridCoord = placeAt + localCoord;
-                (Vector2Int, Orientation) doorInfo = TileDoorCoordTransform(gridCoord, f);
-                if (doorInfo.Item2 == Orientation.Horizontal)
-                {
-                    List<TileInfo> tilesBetween =
-                        DoorTileCoordTransform(doorInfo.Item1, true).ToList().Select(x => GetTile(x)).ToList();
-                    if (!tilesBetween[0].Active || !tilesBetween[1].Active) continue;
-                    RoomType[] typesBetween = tilesBetween
-                        .Select(x => x.Room.Type).ToArray();
-                    RoomType priorityType = typesBetween[0] > typesBetween[1] ? typesBetween[0] : typesBetween[1];
-                    _horizontalDoors[doorInfo.Item1.x, doorInfo.Item1.y] 
-                        = new DoorInfo(priorityType, tilesBetween[0], tilesBetween[1]);
-                }
-                else
-                {
-                    List<TileInfo> tilesBetween =
-                        DoorTileCoordTransform(doorInfo.Item1, false).ToList().Select(x => GetTile(x)).ToList();
-                    if (!tilesBetween[0].Active || !tilesBetween[1].Active) continue;
-                    RoomType[] typesBetween = tilesBetween
-                        .Select(x => x.Room.Type).ToArray();
-                    RoomType priorityType = typesBetween[0] > typesBetween[1] ? typesBetween[0] : typesBetween[1];
-                    _verticalDoors[doorInfo.Item1.x, doorInfo.Item1.y]
-                        = new DoorInfo(priorityType, tilesBetween[0], tilesBetween[1]);
-                }
-            }
-        }
-        return true;*/
+        
     }
 
     /// <summary>

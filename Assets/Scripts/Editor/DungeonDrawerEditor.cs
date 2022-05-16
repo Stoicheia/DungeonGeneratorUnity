@@ -21,22 +21,28 @@ public class DungeonDrawerEditor : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("_drawWithBoundary"));
         GUILayout.Space(20);
         
-        if (GUILayout.Button("Init"))
+        if (GUILayout.Button("Initialise Visualiser"))
         {
             obj.InitialiseGrid();
         }
-        if (GUILayout.Button("Draw"))
+        if (GUILayout.Button("Do One Pass"))
         {
+            obj.DoPass();
             obj.Draw(obj.Info);
         }
         if (GUILayout.Button("Generate and Draw"))
         {
-            obj.Generate();
+            obj.Generate(); 
             obj.Draw(obj.Info);
+        }
+        if (GUILayout.Button("Generate Without Drawing"))
+        {
+            obj.Generate();
         }
         if (GUILayout.Button("Clear"))
         {
-            obj.Clear();
+            obj.Zero(true);
+            obj.ResetPass();
         }
         
 

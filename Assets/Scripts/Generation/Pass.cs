@@ -3,12 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions.Comparers;
 using Random = System.Random;
 
 public class Pass
 {
     private const int MAX_PLACEMENT_ATTEMPTS = 100;
     private const int MAX_QUEUE_TRAVERSAL_FACTOR = 10;
+
+    private Vector2Int _startingLocation;
+    private int _passIndex;
 
     private int _tilesPlaced;
     private Queue<(RoomGenerationParameters, RoomShape)> _roomQueue;
@@ -21,10 +25,14 @@ public class Pass
     /// A pass is a container for a set of generation rules. Call DoPass(dungeon) to write to a dungeon based on these rules.
     /// </summary>
     /// <param name="parameters"></param>
-    public Pass(RoomShapeAsset parameters)
+    /// <param name="startingLocation"></param>
+    /// <param name="index"></param>
+    public Pass(RoomShapeAsset parameters, Vector2Int startingLocation, int index)
     {
         _tilesPlaced = 0;
         _parameters = parameters;
+        _startingLocation = startingLocation;
+        _passIndex = index;
     }
 
     /// <summary>
@@ -89,21 +97,51 @@ public class Pass
                 }
 
                 Room currentRoom = unexploredRooms.Dequeue();
-                List<(Vector2Int, Facing)> possiblePlacements = dungeon.GetBoundaryRooms(currentRoom, false)
+                var boundaryInfo = dungeon.GetBoundaryTilesAndRooms(currentRoom, false);
+                List<(Vector2Int, Facing)> possiblePlacements = boundaryInfo.Item1
                     .OrderBy(x => UnityEngine.Random.Range(0f, 1f)).ToList();
-                List<(Vector2Int, int)> neighbourCount = new List<(Vector2Int, int)>();
+
                 foreach (var p in possiblePlacements)
                 {
                     var (coord, facing) = p;
                     int[] anchor = shape.GetRandomOnBoundaryReverse(facing);
-                    int neighbours = dungeon.CountNeighbours(coord, _toPlaceShape, anchor);
-                    if (neighbours < 0)
+                    var neighbourInfo = dungeon.CountNeighbours(coord, _toPlaceShape, anchor);
+                    var neighbours = neighbourInfo.Item1;
+
+                    List<Room> adjacentRooms = neighbourInfo.Item2;
+                    
+                    if (neighbours < 0) //invalid placement
                     {
                         placementAttempts++;
                         continue;
                     }
+
+                    var connectionViolation = false;
+                    foreach (var r in adjacentRooms)
+                    {
+                        
+                        if (r.CurrentConnections + adjacentRooms.Count(x => x == r) > r.Connections)
+                        {
+                            connectionViolation = true;
+                        }
+                    }
+
+                    if (connectionViolation)
+                    {
+                        placementAttempts++;
+                        continue;
+                    }
+
+                    float distance = (_startingLocation - coord).magnitude;
+                    
                     float random = UnityEngine.Random.Range(0f, 1f);
-                    float probability = rules.GetProbability(neighbours);
+                    float probability = _passIndex == 0 ? rules.GetProbability(neighbours) : rules.GetProbability(neighbours, distance);
+                    if(_passIndex == 0 
+                       &&!(FloatComparer.AreEqual(rules.DistanceModZero, 0, 0.1f) 
+                       && FloatComparer.AreEqual(rules.DistanceModOne, 0, 0.1f)))
+                    {
+                        Debug.LogWarning("You cannot have distance rules for the first pass! These will be ignored.");
+                    }
 
                     if (random >= probability)
                     {
@@ -111,12 +149,19 @@ public class Pass
                         continue;
                     }
 
-                    Room placed = dungeon.PlaceRoom(coord, shape, anchor, RoomType.Normal);
+                    Room placed = dungeon.PlaceRoom(coord, shape, anchor, RoomType.Normal, _toPlaceParams.Connections);
                     if (placed != null)
                     {
                         placementSuccessful = true;
                         unexploredRooms.Enqueue(placed);
                         allRooms.Add(placed);
+
+                        placed.CurrentConnections += neighbours;
+                        foreach (var r in adjacentRooms)
+                        {
+                            r.CurrentConnections++;
+                        }
+                        
                         break;
                     }
                     placementAttempts++;
@@ -124,8 +169,6 @@ public class Pass
             }
 
         }
-        
-        Debug.Log($"{dungeon.ActiveTileCount} tiles");
     }
 
     private void GenerateRoomQueue(RoomShapeAsset parameters, out Queue<(RoomGenerationParameters, RoomShape)> queue)
