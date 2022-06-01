@@ -8,8 +8,21 @@ using UnityEngine.UI;
 
 public class DungeonDrawer : MonoBehaviour
 {
+    public readonly Dictionary<int, Color> PASS_COLORS = new Dictionary<int, Color>()
+    {
+        {-1, Color.black},
+        {0, Color.black},
+        {1, Color.white},
+        {2, Color.red},
+        {3, Color.cyan},
+        {4, Color.yellow},
+        {5, Color.green},
+        {6, Color.magenta},
+    };
+
     public TileGrid Info;
 
+   
     /*private TileInfo[,] _squares = new TileInfo[GRID_SIZE, GRID_SIZE];
     private Dictionary<CoordinatePair, DoorInfo> _doors;
     private List<Room> _rooms = new List<Room>(GRID_SIZE);*/
@@ -24,6 +37,7 @@ public class DungeonDrawer : MonoBehaviour
     [SerializeField] private Image _horizontalDoorPrefab;
 
     [SerializeField] private bool _drawWithBoundary;
+    [SerializeField] private bool _colorPasses;
 
     private Dictionary<Vector2Int, RectTransform> _tiles = new Dictionary<Vector2Int, RectTransform>();
 
@@ -60,8 +74,16 @@ public class DungeonDrawer : MonoBehaviour
             for (int j = 0; j < tileInfo.GetLength(1); j++)
             {
                 TileInfo tile = tileInfo[i, j];
-                if(tile.Active)
-                    _tiles[new Vector2Int(i, j)].gameObject.SetActive(true);
+                if (tile.Active)
+                {
+                    var t = _tiles[new Vector2Int(i, j)];
+                    Image tImage = t.GetComponent<Image>();
+                    t.gameObject.SetActive(true);
+                    if (tImage != null)
+                    {
+                        tImage.color = _colorPasses ? PASS_COLORS[Math.Min(tile.PassPlaced + 1, PASS_COLORS.Count)] : Color.white;
+                    }
+                }
             }
         }
 

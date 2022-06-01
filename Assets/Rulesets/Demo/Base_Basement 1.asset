@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 127d7683d51a6aa458235a93b661843f, type: 3}
+  m_Name: Base_Basement 1
+  m_EditorClassIdentifier: 
+  maxSize: 47
+  minSize: 34
+  neighbourRuleset: {fileID: 11400000, guid: 6694982dffa687f428eea84973ede7fe, type: 2}
+  rooms:
+  - Size: 1
+    SquashedShape: 01
+    Weight: 1
+    MinCount: 0
+    MaxCount: 0
+    Connections: 4
+    OverrideGenerationRules: 0
+    NeighboursRuleset: {fileID: 0}
+    SubordinateRoomIndices: 
+  - Size: 5
+    SquashedShape: 00000100000001010100010101010100010101000000010000
+    Weight: 0.1
+    MinCount: 1
+    MaxCount: 2
+    Connections: 7
+    OverrideGenerationRules: 0
+    NeighboursRuleset: {fileID: 0}
+    SubordinateRoomIndices: 

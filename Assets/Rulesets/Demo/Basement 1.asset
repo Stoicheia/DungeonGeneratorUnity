@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a215f05a8e4bee4e826b11493b517c1, type: 3}
+  m_Name: Basement 1
+  m_EditorClassIdentifier: 
+  startingRoom:
+    Size: 4
+    SquashedShape: 00010100010101010101010100010100
+  passes:
+  - {fileID: 11400000, guid: 14e50de4048138247bc5e7027c1c6b82, type: 2}
+  - {fileID: 11400000, guid: e2f435ea697143343a88fdd7d7f33e9e, type: 2}
+  - {fileID: 11400000, guid: fa828ee8a5b026148a8df9dd589fa025, type: 2}

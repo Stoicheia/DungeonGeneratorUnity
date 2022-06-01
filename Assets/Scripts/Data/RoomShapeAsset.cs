@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "New Room Shapes")]
+[CreateAssetMenu(menuName = "New Pass")]
 public class RoomShapeAsset : ScriptableObject
 {
     [SerializeField][Range(1,256)] private int maxSize;

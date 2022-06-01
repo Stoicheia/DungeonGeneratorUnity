@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9ac89c3111007b4ca5be14c1c429911, type: 3}
+  m_Name: Specials_Rules 1
+  m_EditorClassIdentifier: 
+  PropagateHigher: 0
+  UniversalProbabilityModifier: 1
+  _distanceModZero: 0
+  _distanceModOne: 0
+  _neighbourParams:
+  - neighbours: 1
+    probability: 0.5
+    priority: 0

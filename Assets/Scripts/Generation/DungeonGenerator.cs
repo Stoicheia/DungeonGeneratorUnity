@@ -19,9 +19,29 @@ public class DungeonGenerator : MonoBehaviour
 
     public TileGrid Dungeon;
 
+    public int EffectivePassNumber => Math.Max(_currentPassNumber, 0);
+
+    public GenerationGroup INSTRUCTIONS
+    {
+        get
+        {
+            return Instructions;
+        }
+        set
+        {
+            Instructions = value;
+            Init();
+        }
+    }
+
     private void OnEnable()
     {
         _currentPassNumber = -1;
+    }
+
+    private void OnValidate()
+    {
+        INSTRUCTIONS = Instructions;
     }
 
 

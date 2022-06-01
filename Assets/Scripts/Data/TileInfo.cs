@@ -15,19 +15,21 @@ public struct TileInfo
     public Room Room => _room;
     public Vector2Int Coords => _coords;
 
-    public TileInfo(Room room, Vector2Int coords)
+    public int PassPlaced;
+    public TileInfo(Room room, Vector2Int coords, int passPlaced)
     {
         _room = room;
         _coords = coords;
+        PassPlaced = passPlaced;
     }
 
     public static TileInfo Empty(Vector2Int coords)
     {
-        return new TileInfo(null, coords);
+        return new TileInfo(null, coords, -1);
     }
     
     public static TileInfo Empty(int a = -1, int b = -1)
     {
-        return new TileInfo(Room.Empty(), new Vector2Int(a, b));
+        return new TileInfo(Room.Empty(), new Vector2Int(a, b), -1);
     }
 }

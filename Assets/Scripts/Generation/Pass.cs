@@ -157,7 +157,7 @@ public class Pass
                         continue;
                     }
 
-                    Room placed = dungeon.PlaceRoom(coord, shape, anchor, RoomType.Normal, _toPlaceParams.Connections);
+                    Room placed = dungeon.PlaceRoom(coord, shape, anchor, RoomType.Normal, _toPlaceParams.Connections, _passIndex);
                     if (placed != null)
                     {
                         placementSuccessful = true;

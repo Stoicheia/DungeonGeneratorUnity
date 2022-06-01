@@ -203,7 +203,7 @@ public class TileGrid
     /// <param name="type"></param>
     /// <param name="connections"></param>
     /// <returns></returns>
-    public Room PlaceRoom(Vector2Int at, RoomShape roomShape, int[] anchorArr, RoomType type, int connections = Int32.MaxValue)
+    public Room PlaceRoom(Vector2Int at, RoomShape roomShape, int[] anchorArr, RoomType type, int connections = Int32.MaxValue, int pass = 0)
     {
         bool[,] shape = roomShape.Shape;
         Vector2Int anchor = new Vector2Int(anchorArr[0], anchorArr[1]);
@@ -233,7 +233,7 @@ public class TileGrid
                 Vector2Int localCoord = new Vector2Int(i, j) - anchor;
                 Vector2Int gridCoord = at + localCoord;
                 room.AddTile(gridCoord);
-                _tiles[gridCoord.x, gridCoord.y] = new TileInfo(room, gridCoord);
+                _tiles[gridCoord.x, gridCoord.y] = new TileInfo(room, gridCoord, pass);
             }
         }
 
